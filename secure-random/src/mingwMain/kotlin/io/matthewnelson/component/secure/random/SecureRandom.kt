@@ -34,9 +34,11 @@ public actual class SecureRandom public actual constructor() {
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     *
+     * https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
      * */
     public actual fun nextBytes(bytes: ByteArray?) {
-        if (bytes == null) return
+        if (bytes == null || bytes.isEmpty()) return
         // TODO
         for (i in bytes.indices) {
             bytes[i] = 1
