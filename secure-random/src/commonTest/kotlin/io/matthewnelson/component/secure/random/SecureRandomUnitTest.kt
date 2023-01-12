@@ -32,20 +32,26 @@ class SecureRandomUnitTest {
         }
     }
 
-    @Test
-    @Ignore // TODO
-    fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
-        val bytes = ByteArray(100)
-        val emptyByte = bytes[0]
-        SecureRandom().nextBytes(bytes)
+    // TODO: Remove once all platforms are implemented
+    companion object {
+//        @Test
+        fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
+            val bytes = ByteArray(100)
+            val emptyByte = bytes[0]
+            SecureRandom().nextBytes(bytes)
 
-        var emptyCount = 0
-        bytes.forEach { if (it == emptyByte) { emptyCount++ } }
-        println(bytes.toList())
+            var emptyCount = 0
+            bytes.forEach {
+                if (it == emptyByte) {
+                    emptyCount++
+                }
+            }
+            println(bytes.toList())
 
-        // Some bytes will remain empty so cannot check if all indexes
-        // were filled. We're just trying to verify that something happened,
-        // so ensuring that 90% of the array was filled is good enough imo.
-        assertTrue(emptyCount < 10)
+            // Some bytes will remain empty so cannot check if all indexes
+            // were filled. We're just trying to verify that something happened,
+            // so ensuring that 90% of the array was filled is good enough imo.
+            assertTrue(emptyCount < 10)
+        }
     }
 }
