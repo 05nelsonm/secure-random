@@ -16,7 +16,7 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.commonNextBytes
+import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 import io.matthewnelson.component.secure.random.internal.nativeNextBytes
 
@@ -37,5 +37,5 @@ public actual class SecureRandom public actual constructor() {
     /**
      * Fills a [ByteArray] with securely generated random data.
      * */
-    public actual fun nextBytes(bytes: ByteArray?) { bytes.commonNextBytes { nativeNextBytes() } }
+    public actual fun nextBytes(bytes: ByteArray?) { bytes.ifNotNullOrEmpty { nativeNextBytes() } }
 }

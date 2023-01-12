@@ -15,7 +15,7 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.commonNextBytes
+import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 
 /**
@@ -42,5 +42,5 @@ public actual class SecureRandom: java.security.SecureRandom {
      *
      * @see [java.security.SecureRandom.nextBytes]
      * */
-    public actual override fun nextBytes(bytes: ByteArray?) { bytes.commonNextBytes { super.nextBytes(this) } }
+    public actual override fun nextBytes(bytes: ByteArray?) { bytes.ifNotNullOrEmpty { super.nextBytes(this) } }
 }
