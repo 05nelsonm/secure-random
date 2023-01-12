@@ -40,6 +40,8 @@ public actual class SecureRandom public actual constructor() {
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     *
+     * https://developer.apple.com/documentation/security/1399291-secrandomcopybytes
      * */
     @OptIn(UnsafeNumber::class)
     public actual fun nextBytes(bytes: ByteArray?) {
