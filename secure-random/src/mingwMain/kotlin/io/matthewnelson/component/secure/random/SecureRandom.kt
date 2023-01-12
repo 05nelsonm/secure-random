@@ -38,5 +38,8 @@ public actual class SecureRandom public actual constructor() {
     public actual fun nextBytes(bytes: ByteArray?) {
         if (bytes == null) return
         // TODO
+        for (i in bytes.indices) {
+            bytes[i] = 1
+        }
     }
 }
