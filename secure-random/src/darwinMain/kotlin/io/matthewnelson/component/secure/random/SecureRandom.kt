@@ -43,8 +43,7 @@ public actual class SecureRandom public actual constructor() {
      * */
     @OptIn(UnsafeNumber::class)
     public actual fun nextBytes(bytes: ByteArray?) {
-        if (bytes == null) return
-        val size = bytes.size.toUInt()
+        val size = bytes?.size?.toUInt() ?: return
         bytes.usePinned { pinned ->
             SecRandomCopyBytes(kSecRandomDefault, size.convert(), pinned.addressOf(0))
         }
