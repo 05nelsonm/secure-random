@@ -17,6 +17,12 @@
 package io.matthewnelson.component.secure.random
 
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
+import kotlinx.cinterop.UnsafeNumber
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.usePinned
+import platform.Security.SecRandomCopyBytes
+import platform.Security.kSecRandomDefault
 
 /**
  * A cryptographically strong random number generator (RNG).
@@ -35,8 +41,11 @@ public actual class SecureRandom public actual constructor() {
     /**
      * Fills a [ByteArray] with securely generated random data.
      * */
+    @OptIn(UnsafeNumber::class)
     public actual fun nextBytes(bytes: ByteArray?) {
-        if (bytes == null) return
-        // TODO
+        val size = bytes?.size?.toUInt() ?: return
+        bytes.usePinned { pinned ->
+            SecRandomCopyBytes(kSecRandomDefault, size.convert(), pinned.addressOf(0))
+        }
     }
 }
