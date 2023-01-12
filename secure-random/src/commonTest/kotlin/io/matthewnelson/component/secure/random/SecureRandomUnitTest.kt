@@ -32,6 +32,11 @@ class SecureRandomUnitTest {
     }
 
     @Test
+    fun givenNextBytesOf_whenCount0_thenReturnsEmpty() {
+        assertTrue(SecureRandom().nextBytesOf(0).isEmpty())
+    }
+
+    @Test
     fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
         val bytes = ByteArray(100)
         val emptyByte = bytes[0]
