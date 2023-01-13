@@ -21,13 +21,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Caches [ Konan ]
-        uses: actions/cache@v1
-        with:
-          path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts') }}-${{ hashFiles('kotlin-components/includeBuild/dependencies/src/main/kotlin/versions.kt') }}
-          restore-keys: ${{ runner.os }}-konan-
-
       - name: Setup Caches [ Gradle Wrapper ]
         uses: actions/cache@v1
         with:
@@ -37,6 +30,13 @@ jobs:
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+
+      - name: Setup Caches [ Konan ]
+        uses: actions/cache@v1
+        with:
+          path: ~/.konan
+          key: ${{ runner.os }}-konan-${{ hashFiles('**/*.gradle.kts') }}-${{ hashFiles('kotlin-components/includeBuild/dependencies/src/main/kotlin/versions.kt') }}
+          restore-keys: ${{ runner.os }}-konan-
 
       - name: Setup Caches [ Gradle Caches ]
         uses: actions/cache@v1
