@@ -21,15 +21,15 @@ jobs:
         with:
           submodules: true
 
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
       - name: Setup Caches [ Gradle Wrapper ]
         uses: actions/cache@v1
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.*') }}
           restore-keys: ${{ runner.os }}-gradle-wrapper-
-
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
 
       - name: Setup Caches [ Konan ]
         uses: actions/cache@v1
