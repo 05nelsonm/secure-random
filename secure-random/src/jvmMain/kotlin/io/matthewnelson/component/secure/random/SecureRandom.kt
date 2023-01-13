@@ -15,7 +15,6 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 
 /**
@@ -23,28 +22,47 @@ import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
  *
  * @see [java.security.SecureRandom]
  * */
-public actual class SecureRandom: java.security.SecureRandom {
+public actual class SecureRandom {
 
-    public actual constructor(): super()
-    public constructor(seed: ByteArray): super(seed)
+    private val provider: java.security.SecureRandom
+
+    private constructor(provider: java.security.SecureRandom) { this.provider = provider }
+    public actual constructor(): this(java.security.SecureRandom())
 
     /**
      * Returns a [ByteArray] of size [count], filled with
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
+     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
      * */
-    @Throws(IllegalArgumentException::class)
+    @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     * Does nothing if [bytes] is null or empty.
      *
      * @see [java.security.SecureRandom.nextBytes]
      * */
-    public actual override fun nextBytes(bytes: ByteArray?) {
+    public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            super.nextBytes(this)
+            provider.nextBytes(this)
+        }
+    }
+
+    public actual companion object {
+
+        /**
+         * Returns a strong instance suitable for using with private key generation
+         *
+         * @see [java.security.SecureRandom.getInstanceStrong]
+         * @throws [NoSuchAlgorithmException] if no algorithm is available
+         * */
+        @JvmStatic
+        @Throws(NoSuchAlgorithmException::class)
+        public actual fun instanceStrong(): SecureRandom {
+            return SecureRandom(java.security.SecureRandom.getInstanceStrong())
         }
     }
 }
