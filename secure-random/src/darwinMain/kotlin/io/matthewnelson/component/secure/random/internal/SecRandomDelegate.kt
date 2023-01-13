@@ -39,8 +39,10 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
         @OptIn(UnsafeNumber::class)
         @Throws(SecRandomCopyException::class)
         actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            // TODO: Throw on failure
-            SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), ptrBytes)
+            val errno: Int = SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), ptrBytes)
+            if (errno != 0) {
+                throw SecRandomCopyException(errnoToString(errno))
+            }
         }
     }
 
