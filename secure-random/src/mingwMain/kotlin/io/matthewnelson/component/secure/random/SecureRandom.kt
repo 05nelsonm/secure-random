@@ -18,7 +18,13 @@ package io.matthewnelson.component.secure.random
 
 import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
-import io.matthewnelson.component.secure.random.internal.nativeNextBytes
+import kotlinx.cinterop.UnsafeNumber
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.usePinned
+import platform.windows.BCRYPT_USE_SYSTEM_PREFERRED_RNG
+import platform.windows.BCryptGenRandom
+import platform.windows.PUCHAR
 
 /**
  * A cryptographically strong random number generator (RNG).
@@ -36,6 +42,17 @@ public actual class SecureRandom public actual constructor() {
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     *
+     * https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
      * */
-    public actual fun nextBytes(bytes: ByteArray?) { bytes.ifNotNullOrEmpty { nativeNextBytes() } }
+    @OptIn(UnsafeNumber::class)
+    @Suppress("UNCHECKED_CAST")
+    public actual fun nextBytes(bytes: ByteArray?) {
+        bytes.ifNotNullOrEmpty {
+            val size = size.toULong()
+            usePinned { pinned ->
+                BCryptGenRandom(null, pinned.addressOf(0) as PUCHAR, size.convert(), BCRYPT_USE_SYSTEM_PREFERRED_RNG)
+            }
+        }
+    }
 }

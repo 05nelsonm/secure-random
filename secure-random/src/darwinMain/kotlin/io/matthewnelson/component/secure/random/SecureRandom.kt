@@ -12,21 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  **/
 package io.matthewnelson.component.secure.random
 
 import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
+import kotlinx.cinterop.UnsafeNumber
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.usePinned
+import platform.Security.SecRandomCopyBytes
+import platform.Security.kSecRandomDefault
 
 /**
  * A cryptographically strong random number generator (RNG).
- *
- * @see [java.security.SecureRandom]
  * */
-public actual class SecureRandom: java.security.SecureRandom {
-
-    public actual constructor(): super()
-    public constructor(seed: ByteArray): super(seed)
+public actual class SecureRandom public actual constructor() {
 
     /**
      * Returns a [ByteArray] of size [count], filled with
@@ -40,11 +42,15 @@ public actual class SecureRandom: java.security.SecureRandom {
     /**
      * Fills a [ByteArray] with securely generated random data.
      *
-     * @see [java.security.SecureRandom.nextBytes]
+     * https://developer.apple.com/documentation/security/1399291-secrandomcopybytes
      * */
-    public actual override fun nextBytes(bytes: ByteArray?) {
+    @OptIn(UnsafeNumber::class)
+    public actual fun nextBytes(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            super.nextBytes(this)
+            val size = size.toUInt()
+            usePinned { pinned ->
+                SecRandomCopyBytes(kSecRandomDefault, size.convert(), pinned.addressOf(0))
+            }
         }
     }
 }
