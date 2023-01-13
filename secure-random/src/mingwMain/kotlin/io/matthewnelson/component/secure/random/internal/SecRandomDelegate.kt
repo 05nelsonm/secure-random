@@ -21,9 +21,7 @@ import io.matthewnelson.component.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.convert
-import platform.windows.BCRYPT_USE_SYSTEM_PREFERRED_RNG
-import platform.windows.BCryptGenRandom
-import platform.windows.PUCHAR
+import platform.windows.*
 
 /**
  * https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
@@ -39,14 +37,18 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
         @Suppress("UNCHECKED_CAST")
         @Throws(SecRandomCopyException::class)
         actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            // TODO: Throw on failure
             // TODO: Add fallbacks for pre Vista SP2 (Issue #8)
-            BCryptGenRandom(
+            val status = BCryptGenRandom(
                 null,
                 ptrBytes as PUCHAR,
                 size.toULong().convert(),
                 BCRYPT_USE_SYSTEM_PREFERRED_RNG,
             )
+
+            when (val err = status.toUInt()) {
+                STATUS_INVALID_HANDLE,
+                STATUS_INVALID_PARAMETER -> throw SecRandomCopyException(errorToString(err))
+            }
         }
     }
 
