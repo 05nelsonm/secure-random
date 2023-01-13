@@ -24,9 +24,9 @@ import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
  * */
 public actual class SecureRandom {
 
-    private val provider: java.security.SecureRandom
+    private val delegate: java.security.SecureRandom
 
-    private constructor(provider: java.security.SecureRandom) { this.provider = provider }
+    private constructor(delegate: java.security.SecureRandom) { this.delegate = delegate }
     public actual constructor(): this(java.security.SecureRandom())
 
     /**
@@ -47,14 +47,14 @@ public actual class SecureRandom {
      * */
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            provider.nextBytes(this)
+            delegate.nextBytes(this)
         }
     }
 
     public actual companion object {
 
         /**
-         * Returns a strong instance suitable for using with private key generation
+         * Returns a strong instance suitable for using with private key generation.
          *
          * @see [java.security.SecureRandom.getInstanceStrong]
          * @throws [NoSuchAlgorithmException] if no algorithm is available
