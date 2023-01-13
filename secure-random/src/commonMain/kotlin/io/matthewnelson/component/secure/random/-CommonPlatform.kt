@@ -30,13 +30,6 @@ internal inline fun ByteArray?.ifNotNullOrEmpty(block: ByteArray.() -> Unit) {
     block.invoke(this)
 }
 
-public class SecRandomCopyException: RuntimeException {
-    public constructor(): super()
-    public constructor(message: String?): super(message)
-    public constructor(message: String?, cause: Throwable?): super(message, cause)
-    public constructor(cause: Throwable?): super(cause)
-}
-
 public expect open class GeneralSecurityException: Exception {
     public constructor()
     public constructor(message: String?)
@@ -49,4 +42,11 @@ public expect open class NoSuchAlgorithmException: GeneralSecurityException {
     public constructor(message: String?)
     public constructor(message: String?, cause: Throwable?)
     public constructor(cause: Throwable?)
+}
+
+public class SecRandomCopyException: GeneralSecurityException {
+    public constructor(): super()
+    public constructor(message: String?): super(message)
+    public constructor(message: String?, cause: Throwable?): super(message, cause)
+    public constructor(cause: Throwable?): super(cause)
 }
