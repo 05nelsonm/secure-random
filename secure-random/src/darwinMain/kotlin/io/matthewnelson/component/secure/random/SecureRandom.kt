@@ -16,7 +16,6 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.ifNotNullOrEmpty
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
@@ -28,29 +27,54 @@ import platform.Security.kSecRandomDefault
 /**
  * A cryptographically strong random number generator (RNG).
  * */
-public actual class SecureRandom public actual constructor() {
+public actual class SecureRandom {
+
+    // TODO: Add provider constructor for strong instance
+    @Suppress("ConvertSecondaryConstructorToPrimary")
+    public actual constructor()
 
     /**
      * Returns a [ByteArray] of size [count], filled with
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
+     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
      * */
-    @Throws(IllegalArgumentException::class)
+    @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     * Does nothing if [bytes] is null or empty.
      *
      * https://developer.apple.com/documentation/security/1399291-secrandomcopybytes
+     *
+     * @throws [SecRandomCopyException] if procurement of securely random data failed
      * */
     @OptIn(UnsafeNumber::class)
-    public actual fun nextBytes(bytes: ByteArray?) {
+    @Throws(SecRandomCopyException::class)
+    public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
             val size = size.toUInt()
+
+            // TODO: Move to provider
+            // TODO: Throw on failure
             usePinned { pinned ->
                 SecRandomCopyBytes(kSecRandomDefault, size.convert(), pinned.addressOf(0))
             }
+        }
+    }
+
+    public actual companion object {
+
+        /**
+         * Returns a strong instance suitable for using with private key generation
+         *
+         * @throws [NoSuchAlgorithmException] if no algorithm is available
+         * */
+        @Throws(NoSuchAlgorithmException::class)
+        public actual fun instanceStrong(): SecureRandom {
+            throw NoSuchAlgorithmException("Not yet implemented")
         }
     }
 }
