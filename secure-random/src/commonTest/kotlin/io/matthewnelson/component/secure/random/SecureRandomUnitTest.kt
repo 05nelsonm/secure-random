@@ -48,6 +48,8 @@ class SecureRandomUnitTest {
             if (e.message == "Not yet implemented") {
                 e.printStackTrace()
                 return
+            } else {
+                throw e
             }
         }
 
