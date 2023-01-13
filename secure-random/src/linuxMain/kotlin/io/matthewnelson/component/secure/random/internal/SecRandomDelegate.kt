@@ -32,6 +32,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
                 @Throws(SecRandomCopyException::class)
                 override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+                    // TODO: Implement (Issue #4)
                     // TODO: Throw on failure
                     throw SecRandomCopyException("Not yet implemented")
                 }
@@ -50,8 +51,8 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         internal actual companion object {
             @Throws(NoSuchAlgorithmException::class)
-            internal actual fun instance(): SecRandomDelegate {
-                TODO("Not yet implemented")
+            internal actual fun instance(): Strong {
+                throw NoSuchAlgorithmException("Not yet implemented")
             }
         }
     }

@@ -20,6 +20,7 @@ import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 /**
  * A cryptographically strong random number generator (RNG).
  *
+ * @see [instanceStrong]
  * @see [java.security.SecureRandom]
  * */
 public actual class SecureRandom {
@@ -36,7 +37,7 @@ public actual class SecureRandom {
      * @throws [IllegalArgumentException] if [count] is negative.
      * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
      * */
-    @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
+    @Throws(IllegalArgumentException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
 
     /**
@@ -54,7 +55,7 @@ public actual class SecureRandom {
     public actual companion object {
 
         /**
-         * Returns a strong instance suitable for using with private key generation.
+         * Returns a strong instance suitable for private key generation.
          *
          * @see [java.security.SecureRandom.getInstanceStrong]
          * @throws [NoSuchAlgorithmException] if no algorithm is available

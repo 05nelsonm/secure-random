@@ -17,6 +17,8 @@ package io.matthewnelson.component.secure.random
 
 /**
  * A cryptographically strong random number generator (RNG).
+ *
+ * @see [instanceStrong]
  * */
 public expect class SecureRandom() {
 
@@ -42,7 +44,7 @@ public expect class SecureRandom() {
     public companion object {
 
         /**
-         * Returns a strong instance suitable for using with private key generation.
+         * Returns a strong instance suitable for private key generation.
          *
          * @throws [NoSuchAlgorithmException] if no algorithm is available
          * */

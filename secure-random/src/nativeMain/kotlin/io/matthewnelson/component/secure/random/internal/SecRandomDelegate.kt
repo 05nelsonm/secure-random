@@ -34,8 +34,7 @@ internal expect abstract class SecRandomDelegate private constructor() {
     internal class Strong private constructor(): SecRandomDelegate {
         internal companion object {
             @Throws(NoSuchAlgorithmException::class)
-            internal fun instance(): SecRandomDelegate
+            internal fun instance(): Strong
         }
     }
 }
-

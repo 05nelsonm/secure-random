@@ -58,8 +58,8 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         internal actual companion object {
             @Throws(NoSuchAlgorithmException::class)
-            internal actual fun instance(): SecRandomDelegate {
-                TODO("Not yet implemented")
+            internal actual fun instance(): Strong {
+                throw NoSuchAlgorithmException("Not yet implemented")
             }
         }
     }

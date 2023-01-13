@@ -24,6 +24,8 @@ import kotlinx.cinterop.usePinned
 
 /**
  * A cryptographically strong random number generator (RNG).
+ *
+ * @see [instanceStrong]
  * */
 public actual class SecureRandom {
 
@@ -62,7 +64,7 @@ public actual class SecureRandom {
     public actual companion object {
 
         /**
-         * Returns a strong instance suitable for using with private key generation
+         * Returns a strong instance suitable for private key generation.
          *
          * @throws [NoSuchAlgorithmException] if no algorithm is available
          * */
