@@ -35,7 +35,6 @@ public actual class SecureRandom {
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
-     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
      * */
     @Throws(IllegalArgumentException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
