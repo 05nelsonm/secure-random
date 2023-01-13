@@ -16,23 +16,21 @@
  **/
 package io.matthewnelson.component.secure.random
 
+import io.matthewnelson.component.secure.random.internal.SecRandomDelegate
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
-import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.convert
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.usePinned
-import platform.windows.BCRYPT_USE_SYSTEM_PREFERRED_RNG
-import platform.windows.BCryptGenRandom
-import platform.windows.PUCHAR
 
 /**
  * A cryptographically strong random number generator (RNG).
  * */
 public actual class SecureRandom {
 
-    // TODO: Add provider constructor for strong instance
-    @Suppress("ConvertSecondaryConstructorToPrimary")
-    public actual constructor()
+    private val delegate: SecRandomDelegate
+
+    private constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
+    public actual constructor(): this(SecRandomDelegate.instance())
 
     /**
      * Returns a [ByteArray] of size [count], filled with
@@ -48,21 +46,15 @@ public actual class SecureRandom {
      * Fills a [ByteArray] with securely generated random data.
      * Does nothing if [bytes] is null or empty.
      *
-     * https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptgenrandom
-     *
      * @throws [SecRandomCopyException] if procurement of securely random data failed
      * */
-    @OptIn(UnsafeNumber::class)
-    @Suppress("UNCHECKED_CAST")
     @Throws(SecRandomCopyException::class)
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            val size = size.toULong()
-
-            // TODO: Move to provider
-            // TODO: Throw on failure
             usePinned { pinned ->
-                BCryptGenRandom(null, pinned.addressOf(0) as PUCHAR, size.convert(), BCRYPT_USE_SYSTEM_PREFERRED_RNG)
+                memScoped {
+                    delegate.nextBytesCopyTo(size, pinned.addressOf(0))
+                }
             }
         }
     }
@@ -76,7 +68,7 @@ public actual class SecureRandom {
          * */
         @Throws(NoSuchAlgorithmException::class)
         public actual fun instanceStrong(): SecureRandom {
-            throw NoSuchAlgorithmException("Not yet implemented")
+            return SecureRandom(SecRandomDelegate.Strong.instance())
         }
     }
 }
