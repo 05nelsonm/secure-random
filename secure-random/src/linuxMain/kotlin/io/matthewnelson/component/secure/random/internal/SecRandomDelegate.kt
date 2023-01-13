@@ -26,20 +26,15 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-    internal actual companion object {
-        private val instance by lazy {
-            object : SecRandomDelegate() {
+    // Default instance
+    internal actual companion object: SecRandomDelegate() {
 
-                @Throws(SecRandomCopyException::class)
-                override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-                    // TODO: Implement (Issue #4)
-                    // TODO: Throw on failure
-                    throw SecRandomCopyException("Not yet implemented")
-                }
-            }
+        @Throws(SecRandomCopyException::class)
+        actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+            // TODO: Implement (Issue #4)
+            // TODO: Throw on failure
+            throw SecRandomCopyException("Not yet implemented")
         }
-
-        internal actual fun instance(): SecRandomDelegate = instance
     }
 
     internal actual class Strong private actual constructor(): SecRandomDelegate() {

@@ -33,26 +33,21 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-    internal actual companion object {
-        private val instance by lazy {
-            object : SecRandomDelegate() {
+    // Default instance
+    internal actual companion object: SecRandomDelegate() {
 
-                @Suppress("UNCHECKED_CAST")
-                @Throws(SecRandomCopyException::class)
-                override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-                    // TODO: Throw on failure
-                    // TODO: Add fallbacks for pre Vista SP2 (Issue #8)
-                    BCryptGenRandom(
-                        null,
-                        ptrBytes as PUCHAR,
-                        size.toULong().convert(),
-                        BCRYPT_USE_SYSTEM_PREFERRED_RNG,
-                    )
-                }
-            }
+        @Suppress("UNCHECKED_CAST")
+        @Throws(SecRandomCopyException::class)
+        actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+            // TODO: Throw on failure
+            // TODO: Add fallbacks for pre Vista SP2 (Issue #8)
+            BCryptGenRandom(
+                null,
+                ptrBytes as PUCHAR,
+                size.toULong().convert(),
+                BCRYPT_USE_SYSTEM_PREFERRED_RNG,
+            )
         }
-
-        internal actual fun instance(): SecRandomDelegate = instance
     }
 
     internal actual class Strong private actual constructor(): SecRandomDelegate() {

@@ -32,7 +32,7 @@ public actual class SecureRandom {
     private val delegate: SecRandomDelegate
 
     private constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
-    public actual constructor(): this(SecRandomDelegate.instance())
+    public actual constructor(): this(SecRandomDelegate.Companion)
 
     /**
      * Returns a [ByteArray] of size [count], filled with

@@ -26,9 +26,10 @@ internal expect abstract class SecRandomDelegate private constructor() {
     @Throws(SecRandomCopyException::class)
     internal abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-    internal companion object {
-        // Default instance
-        internal fun instance(): SecRandomDelegate
+    // Default instance
+    internal companion object: SecRandomDelegate {
+        @Throws(SecRandomCopyException::class)
+        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
     }
 
     internal class Strong private constructor(): SecRandomDelegate {
