@@ -40,7 +40,7 @@ class SecureRandomUnitTest {
     fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
         val bytes = ByteArray(100)
         val emptyByte = bytes[0]
-        SecureRandom().nextBytes(bytes)
+        SecureRandom().nextBytesCopyTo(bytes)
 
         var emptyCount = 0
         bytes.forEach {
