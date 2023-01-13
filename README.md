@@ -1,23 +1,25 @@
 # component-secure-random
 [![badge-license]][url-license]
+<!--
 [![badge-latest-release]][url-latest-release]
+-->
 
 [![badge-kotlin]][url-kotlin]
 
 ![badge-platform-android]
 ![badge-platform-jvm]
+![badge-platform-linux]
 ![badge-platform-macos]
 ![badge-platform-ios]
 ![badge-platform-tvos]
 ![badge-platform-watchos]
+![badge-platform-windows]
 ![badge-support-apple-silicon]
 
 <!--
 ![badge-platform-js]
 ![badge-platform-js-node]
-![badge-platform-linux]
 ![badge-platform-wasm]
-![badge-platform-windows]
 ![badge-support-android-native]
 ![badge-support-js-ir]
 -->
@@ -34,6 +36,10 @@ TODO
 
 <!-- TAG_VERSION -->
 
+TODO
+
+<!--
+
 ```kotlin
 // build.gradle.kts
 dependencies {
@@ -41,14 +47,14 @@ dependencies {
 }
 ```
 
-<!-- TAG_VERSION -->
-
 ```groovy
 // build.gradle
 dependencies {
     implementation "io.matthewnelson.kotlin-components:secure-random:0.1.0"
 }
 ```
+
+-->
 
 ### Kotlin Version Compatibility
 

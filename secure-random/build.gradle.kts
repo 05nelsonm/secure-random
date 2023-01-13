@@ -51,6 +51,7 @@ kmpConfiguration {
                 implementation(kotlin("test"))
             }
         },
+
         kotlin = {
             explicitApi()
         }

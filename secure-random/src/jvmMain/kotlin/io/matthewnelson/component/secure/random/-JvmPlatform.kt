@@ -12,21 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  **/
-package io.matthewnelson.component.secure.random.internal
+package io.matthewnelson.component.secure.random
 
-import kotlinx.cinterop.UnsafeNumber
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.usePinned
-import platform.Security.SecRandomCopyBytes
-import platform.Security.kSecRandomDefault
-
-@OptIn(UnsafeNumber::class)
-internal actual fun ByteArray.nativeNextBytes() {
-    val size = size.toUInt()
-    usePinned { pinned ->
-        SecRandomCopyBytes(kSecRandomDefault, size.convert(), pinned.addressOf(0))
-    }
-}
+public actual typealias GeneralSecurityException = java.security.GeneralSecurityException
+public actual typealias NoSuchAlgorithmException = java.security.NoSuchAlgorithmException

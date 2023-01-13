@@ -16,26 +16,61 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.commonNextBytes
+import io.matthewnelson.component.secure.random.internal.SecRandomDelegate
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
-import io.matthewnelson.component.secure.random.internal.nativeNextBytes
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.usePinned
 
 /**
  * A cryptographically strong random number generator (RNG).
+ *
+ * @see [instanceStrong]
  * */
-public actual class SecureRandom public actual constructor() {
+public actual class SecureRandom {
+
+    private val delegate: SecRandomDelegate
+
+    private constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
+    public actual constructor(): this(SecRandomDelegate.Companion)
 
     /**
      * Returns a [ByteArray] of size [count], filled with
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
+     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
      * */
-    @Throws(IllegalArgumentException::class)
+    @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     * Does nothing if [bytes] is null or empty.
+     *
+     * @throws [SecRandomCopyException] if procurement of securely random data failed
      * */
-    public actual fun nextBytes(bytes: ByteArray?) { bytes.commonNextBytes { nativeNextBytes() } }
+    @Throws(SecRandomCopyException::class)
+    public actual fun nextBytesCopyTo(bytes: ByteArray?) {
+        bytes.ifNotNullOrEmpty {
+            usePinned { pinned ->
+                memScoped {
+                    delegate.nextBytesCopyTo(size, pinned.addressOf(0))
+                }
+            }
+        }
+    }
+
+    public actual companion object {
+
+        /**
+         * Returns a strong instance suitable for private key generation.
+         *
+         * @throws [NoSuchAlgorithmException] if no algorithm is available
+         * */
+        @Throws(NoSuchAlgorithmException::class)
+        public actual fun instanceStrong(): SecureRandom {
+            return SecureRandom(SecRandomDelegate.Strong.instance())
+        }
+    }
 }

@@ -15,18 +15,20 @@
  **/
 package io.matthewnelson.component.secure.random
 
-import io.matthewnelson.component.secure.random.internal.commonNextBytes
 import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 
 /**
  * A cryptographically strong random number generator (RNG).
  *
+ * @see [instanceStrong]
  * @see [java.security.SecureRandom]
  * */
-public actual class SecureRandom: java.security.SecureRandom {
+public actual class SecureRandom {
 
-    public actual constructor(): super()
-    public constructor(seed: ByteArray): super(seed)
+    private val delegate: java.security.SecureRandom
+
+    private constructor(delegate: java.security.SecureRandom) { this.delegate = delegate }
+    public actual constructor(): this(java.security.SecureRandom())
 
     /**
      * Returns a [ByteArray] of size [count], filled with
@@ -39,8 +41,28 @@ public actual class SecureRandom: java.security.SecureRandom {
 
     /**
      * Fills a [ByteArray] with securely generated random data.
+     * Does nothing if [bytes] is null or empty.
      *
      * @see [java.security.SecureRandom.nextBytes]
      * */
-    public actual override fun nextBytes(bytes: ByteArray?) { bytes.commonNextBytes { super.nextBytes(this) } }
+    public actual fun nextBytesCopyTo(bytes: ByteArray?) {
+        bytes.ifNotNullOrEmpty {
+            delegate.nextBytes(this)
+        }
+    }
+
+    public actual companion object {
+
+        /**
+         * Returns a strong instance suitable for private key generation.
+         *
+         * @see [java.security.SecureRandom.getInstanceStrong]
+         * @throws [NoSuchAlgorithmException] if no algorithm is available
+         * */
+        @JvmStatic
+        @Throws(NoSuchAlgorithmException::class)
+        public actual fun instanceStrong(): SecureRandom {
+            return SecureRandom(java.security.SecureRandom.getInstanceStrong())
+        }
+    }
 }

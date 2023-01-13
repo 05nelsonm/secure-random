@@ -15,27 +15,14 @@
  **/
 package io.matthewnelson.component.secure.random.internal
 
+import io.matthewnelson.component.secure.random.SecRandomCopyException
 import io.matthewnelson.component.secure.random.SecureRandom
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 @Suppress("NOTHING_TO_INLINE")
-@Throws(IllegalArgumentException::class)
+@Throws(IllegalArgumentException::class, SecRandomCopyException::class)
 internal inline fun SecureRandom.commonNextBytesOf(count: Int): ByteArray {
     require(count >= 0) { "count cannot be negative" }
     val bytes = ByteArray(count)
-    nextBytes(bytes)
+    nextBytesCopyTo(bytes)
     return bytes
-}
-
-@OptIn(ExperimentalContracts::class)
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun ByteArray?.commonNextBytes(block: ByteArray.() -> Unit) {
-    contract {
-        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
-    }
-
-    if (this == null || this.isEmpty()) return
-    block.invoke(this)
 }
