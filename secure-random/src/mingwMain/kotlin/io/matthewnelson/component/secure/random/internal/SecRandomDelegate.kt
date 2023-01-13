@@ -43,11 +43,11 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
                 ptrBytes as PUCHAR,
                 size.toULong().convert(),
                 BCRYPT_USE_SYSTEM_PREFERRED_RNG,
-            )
+            ).toUInt()
 
-            when (val err = status.toUInt()) {
+            when (status) {
                 STATUS_INVALID_HANDLE,
-                STATUS_INVALID_PARAMETER -> throw SecRandomCopyException(errorToString(err))
+                STATUS_INVALID_PARAMETER -> throw SecRandomCopyException(errorToString(status))
             }
         }
     }
