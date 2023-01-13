@@ -15,6 +15,21 @@
  **/
 package io.matthewnelson.component.secure.random
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
+@OptIn(ExperimentalContracts::class)
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun ByteArray?.ifNotNullOrEmpty(block: ByteArray.() -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.AT_MOST_ONCE)
+    }
+
+    if (this == null || this.isEmpty()) return
+    block.invoke(this)
+}
+
 public class SecRandomCopyException: RuntimeException {
     public constructor(): super()
     public constructor(message: String?): super(message)
