@@ -38,4 +38,15 @@ public expect class SecureRandom() {
      * */
     @Throws(SecRandomCopyException::class)
     public fun nextBytesCopyTo(bytes: ByteArray?)
+
+    public companion object {
+
+        /**
+         * Returns a strong instance suitable for using with private key generation.
+         *
+         * @throws [NoSuchAlgorithmException] if no algorithm is available
+         * */
+        @Throws(NoSuchAlgorithmException::class)
+        public fun instanceStrong(): SecureRandom
+    }
 }
