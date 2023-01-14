@@ -37,6 +37,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+
             throw SecRandomCopyException("Not yet implemented")
         }
     }
