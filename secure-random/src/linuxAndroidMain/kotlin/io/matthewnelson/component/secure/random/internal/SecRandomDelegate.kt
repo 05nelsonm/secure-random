@@ -44,8 +44,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
                     throw SecRandomCopyException(errnoToString(result))
                 }
             } else {
-                // TODO: Add fallback to read from /dev/urandom (after ensuring
-                //  /dev/random has proper amount of entropy)
+                // TODO: Add fallback (Issue #25)
                 throw SecRandomCopyException("SYS_getrandom not supported")
             }
         }
