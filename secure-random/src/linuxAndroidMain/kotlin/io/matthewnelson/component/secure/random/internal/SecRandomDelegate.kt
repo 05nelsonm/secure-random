@@ -30,23 +30,33 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
     internal actual companion object {
 
-        actual fun instance(): SecRandomDelegate = SecRandomDelegateLinux
+        actual fun instance(): SecRandomDelegate {
+            return if (GetRandom.instance.isAvailable()) {
+                SecRandomDelegateGetRandom
+            } else {
+                SecRandomDelegateURandom
+            }
+        }
     }
 
-    private object SecRandomDelegateLinux: SecRandomDelegate() {
+    private object SecRandomDelegateGetRandom: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            if (GetRandom.instance.isAvailable()) {
-                @OptIn(UnsafeNumber::class)
-                val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert())
-                if (result < 0) {
-                    throw SecRandomCopyException(errnoToString(result))
-                }
-            } else {
-                // TODO: Add fallback (Issue #25)
-                throw SecRandomCopyException("SYS_getrandom not supported")
+            @OptIn(UnsafeNumber::class)
+            val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert())
+            if (result < 0) {
+                throw SecRandomCopyException(errnoToString(result))
             }
+        }
+    }
+
+    private object SecRandomDelegateURandom: SecRandomDelegate() {
+
+        @Throws(SecRandomCopyException::class)
+        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+            // TODO: Add fallback (Issue #25)
+            throw SecRandomCopyException("SYS_getrandom not supported")
         }
     }
 }
