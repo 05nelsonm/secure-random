@@ -16,11 +16,11 @@
  **/
 package io.matthewnelson.component.secure.random.internal
 
-import io.matthewnelson.component.secure.random.NoSuchAlgorithmException
 import io.matthewnelson.component.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.convert
+import kotlinx.cinterop.reinterpret
 import platform.windows.*
 
 /**
@@ -31,16 +31,21 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-    // Default instance
-    internal actual companion object: SecRandomDelegate() {
+    internal actual companion object {
 
-        @Suppress("UNCHECKED_CAST")
-        @Throws(SecRandomCopyException::class)
-        actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+        internal actual fun instance(): SecRandomDelegate {
             // TODO: Add fallbacks for pre Vista SP2 (Issue #8)
+            return SecRandomDelegateMingwVistaSP2
+        }
+    }
+
+    private object SecRandomDelegateMingwVistaSP2: SecRandomDelegate() {
+
+        @Throws(SecRandomCopyException::class)
+        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
             val status = BCryptGenRandom(
                 null,
-                ptrBytes as PUCHAR,
+                ptrBytes.reinterpret(),
                 size.toULong().convert(),
                 BCRYPT_USE_SYSTEM_PREFERRED_RNG,
             ).toUInt()
@@ -51,20 +56,4 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
             }
         }
     }
-
-    internal actual class Strong private actual constructor(): SecRandomDelegate() {
-
-        @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            throw SecRandomCopyException("Not yet implemented")
-        }
-
-        internal actual companion object {
-            @Throws(NoSuchAlgorithmException::class)
-            internal actual fun instance(): Strong {
-                throw NoSuchAlgorithmException("Not yet implemented")
-            }
-        }
-    }
-
 }
