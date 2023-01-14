@@ -64,24 +64,24 @@ kmpConfiguration {
             // If either linux or androidNative sources are available
             if (!(linuxMain == null && androidNativeMain == null)) {
                 sourceSets {
-                    val nativeGetRandomMain by creating {
+                    val linuxAndroidMain by creating {
                         dependsOn(sourceSetNativeMain!!)
                     }
-                    val nativeGetRandomTest by creating {
+                    val linuxAndroidTest by creating {
                         dependsOn(sourceSetNativeTest!!)
                     }
 
                     linuxMain?.apply {
-                        dependsOn(nativeGetRandomMain)
+                        dependsOn(linuxAndroidMain)
                     }
                     sourceSetLinuxTest {
-                        dependsOn(nativeGetRandomTest)
+                        dependsOn(linuxAndroidTest)
                     }
                     androidNativeMain?.apply {
-                        dependsOn(nativeGetRandomMain)
+                        dependsOn(linuxAndroidMain)
                     }
                     sourceSetAndroidNativeTest {
-                        dependsOn(nativeGetRandomTest)
+                        dependsOn(linuxAndroidTest)
                     }
                 }
             }
