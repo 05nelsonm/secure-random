@@ -14,13 +14,13 @@
 ![badge-platform-tvos]
 ![badge-platform-watchos]
 ![badge-platform-windows]
+![badge-support-android-native]
 ![badge-support-apple-silicon]
 
 <!--
 ![badge-platform-js]
 ![badge-platform-js-node]
 ![badge-platform-wasm]
-![badge-support-android-native]
 ![badge-support-js-ir]
 -->
 

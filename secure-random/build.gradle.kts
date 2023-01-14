@@ -14,6 +14,7 @@
  * limitations under the License.
  **/
 import io.matthewnelson.kotlin.components.kmp.KmpTarget
+import io.matthewnelson.kotlin.components.kmp.util.*
 
 plugins {
     id(pluginId.kmp.configuration)
@@ -39,7 +40,7 @@ kmpConfiguration {
 //            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
-//        KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
+        KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
         KmpTarget.NonJvm.Native.Unix.Darwin.Ios.ALL_DEFAULT     +
         KmpTarget.NonJvm.Native.Unix.Darwin.Macos.ALL_DEFAULT   +
         KmpTarget.NonJvm.Native.Unix.Darwin.Tvos.ALL_DEFAULT    +
@@ -56,6 +57,34 @@ kmpConfiguration {
 
         kotlin = {
             explicitApi()
+
+            val linuxMain = sourceSetLinuxMain
+            val androidNativeMain = sourceSetAndroidNativeMain
+
+            // If either linux or androidNative sources are available
+            if (!(linuxMain == null && androidNativeMain == null)) {
+                sourceSets {
+                    val nativeGetRandomMain by creating {
+                        dependsOn(sourceSetNativeMain!!)
+                    }
+                    val nativeGetRandomTest by creating {
+                        dependsOn(sourceSetNativeTest!!)
+                    }
+
+                    linuxMain?.apply {
+                        dependsOn(nativeGetRandomMain)
+                    }
+                    sourceSetLinuxTest {
+                        dependsOn(nativeGetRandomTest)
+                    }
+                    androidNativeMain?.apply {
+                        dependsOn(nativeGetRandomMain)
+                    }
+                    sourceSetAndroidNativeTest {
+                        dependsOn(nativeGetRandomTest)
+                    }
+                }
+            }
         }
     )
 }
