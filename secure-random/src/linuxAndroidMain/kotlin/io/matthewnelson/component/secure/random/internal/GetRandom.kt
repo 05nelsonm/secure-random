@@ -28,11 +28,13 @@ import kotlin.native.concurrent.AtomicInt
  *
  * Must always check that [isAvailable] returns true before
  * calling [getrandom].
+ *
+ * https://man7.org/linux/man-pages/man2/getrandom.2.html
  * */
 internal class GetRandom private constructor() {
 
     internal companion object {
-        const val NO_FLAGS: UInt = 0U
+        private const val NO_FLAGS: UInt = 0U
         // https://docs.piston.rs/dev_menu/libc/constant.SYS_getrandom.html
         private const val SYS_getrandom: Long = 318L
         // https://docs.piston.rs/dev_menu/libc/constant.GRND_NONBLOCK.html
@@ -109,14 +111,15 @@ internal class GetRandom private constructor() {
 
     /**
      * Must always call [isAvailable] beforehand.
-     *
-     * https://man7.org/linux/man-pages/man2/getrandom.2.html
      * */
     @OptIn(UnsafeNumber::class)
-    internal fun getrandom(
+    internal fun getrandom(buf: CPointer<ByteVar>, buflen: size_t): Int = getrandom(buf, buflen, NO_FLAGS)
+
+    @OptIn(UnsafeNumber::class)
+    private fun getrandom(
         buf: CPointer<ByteVar>,
         buflen: size_t,
-        flags: u_int = NO_FLAGS,
+        flags: u_int,
     ): Int {
         @Suppress("RemoveRedundantCallsOfConversionMethods")
         return syscall(SYS_getrandom.convert(), buf, buflen, flags).toInt()
