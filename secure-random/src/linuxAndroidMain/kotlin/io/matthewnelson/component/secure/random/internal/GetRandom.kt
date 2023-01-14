@@ -17,9 +17,15 @@
 
 package io.matthewnelson.component.secure.random.internal
 
-import kotlinx.cinterop.*
-import platform.posix.*
-import kotlin.native.concurrent.AtomicInt
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.UnsafeNumber
+import kotlinx.cinterop.convert
+import platform.posix.ENOSYS
+import platform.posix.EPERM
+import platform.posix.size_t
+import platform.posix.syscall
+import platform.posix.u_int
 
 /**
  * Helper for:
@@ -31,7 +37,7 @@ import kotlin.native.concurrent.AtomicInt
  *
  * https://man7.org/linux/man-pages/man2/getrandom.2.html
  * */
-internal class GetRandom private constructor() {
+internal class GetRandom private constructor(): SecRandomPoller() {
 
     internal companion object {
         private const val NO_FLAGS: UInt = 0U
@@ -40,72 +46,25 @@ internal class GetRandom private constructor() {
         // https://docs.piston.rs/dev_menu/libc/constant.GRND_NONBLOCK.html
         private const val GRND_NONBLOCK: UInt = 0x0001U
 
-        private const val TRUE = 1
-        private const val FALSE = 0
-        private const val UNCHECKED = -1
-
         internal val instance = GetRandom()
     }
 
-    private val hasGetRandom = AtomicInt(UNCHECKED)
-
     internal fun isAvailable(): Boolean {
-        when (hasGetRandom.value) {
-            FALSE -> return false
-            TRUE -> return true
-            else -> {
-                val buf = ByteArray(1)
-                val lock = buf.hashCode()
-
-                try {
-                    return checkGetRandom(buf, lock)
-                } finally {
-                    // If for some reason value wasn't updated to t/f
-                    // release the lock by setting it back to UNCHECKED
-                    hasGetRandom.compareAndSet(lock, UNCHECKED)
-                }
-            }
-        }
-    }
-
-    private fun checkGetRandom(buf: ByteArray, lock: Int): Boolean {
-        // acquire lock
-        while (true) {
-            when (hasGetRandom.value) {
-                FALSE -> return false
-                TRUE -> return true
-                else -> {
-                    if (hasGetRandom.compareAndSet(UNCHECKED, lock)) {
-                        break
-                    }
-                }
-            }
-        }
-
-        // Check non-blocking with 1 byte
-        val result = buf.usePinned { pinned ->
+        return pollingResult { buf, size ->
             @OptIn(UnsafeNumber::class)
-            getrandom(pinned.addressOf(0), buf.size.toULong().convert(), GRND_NONBLOCK)
-        }
+            val result = getrandom(buf, size.toULong().convert(), GRND_NONBLOCK)
 
-        // Set + return t/f
-        if (result < 0) {
-            @Suppress("LiftReturnOrAssignment")
-            when (result) {
-                ENOSYS, // No kernel support
-                EPERM, // Blocked by seccomp
-                -> {
-                    hasGetRandom.compareAndSet(lock, FALSE)
-                    return false
+            if (result < 0) {
+                when (result) {
+                    ENOSYS, // No kernel support
+                    EPERM, // Blocked by seccomp
+                    -> false
+                    else
+                    -> true
                 }
-                else -> {
-                    hasGetRandom.compareAndSet(lock, TRUE)
-                    return true
-                }
+            } else {
+                true
             }
-        } else {
-            hasGetRandom.compareAndSet(lock, TRUE)
-            return true
         }
     }
 
