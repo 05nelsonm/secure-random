@@ -9,4 +9,5 @@ if (CHECK_PUBLICATION != null) {
     include(":tools:check-publication")
 } else {
     include(":secure-random")
+    include(":samples:native")
 }

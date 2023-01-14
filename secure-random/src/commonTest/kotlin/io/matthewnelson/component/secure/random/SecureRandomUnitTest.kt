@@ -16,6 +16,7 @@
 package io.matthewnelson.component.secure.random
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -36,34 +37,68 @@ class SecureRandomUnitTest {
         assertTrue(SecureRandom().nextBytesOf(0).isEmpty())
     }
 
+    // https://github.com/briansmith/ring/blob/main/tests/rand_tests.rs
     @Test
     fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
-        val bytes = ByteArray(100)
-        val emptyByte = bytes[0]
+        val linuxLimit = 256
+        val webLimit = 65536
 
-        try {
-            SecureRandom().nextBytesCopyTo(bytes)
-        } catch (e: SecRandomCopyException) {
-            // TODO: Remove once implementations are all complete
-            if (e.message == "Not yet implemented") {
-                e.printStackTrace()
-                return
-            } else {
-                throw e
+        val sizes = listOf(
+            1,
+            2,
+            3,
+            96,
+            linuxLimit - 1,
+            linuxLimit,
+            linuxLimit + 1,
+            linuxLimit * 2,
+            511,
+            512,
+            513,
+            4096,
+            webLimit - 1,
+            webLimit,
+            webLimit + 1,
+            webLimit * 2,
+        )
+
+        for (size in sizes) {
+            val bytes = ByteArray(size)
+            val emptyByte = bytes[0]
+
+            try {
+                SecureRandom().nextBytesCopyTo(bytes)
+            } catch (e: SecRandomCopyException) {
+                // TODO: Remove once implementations are all complete
+                if (e.message == "Not yet implemented") {
+                    continue
+                } else {
+                    throw e
+                }
             }
-        }
 
-        var emptyCount = 0
-        bytes.forEach {
-            if (it == emptyByte) {
-                emptyCount++
+            var emptyCount = 0
+            bytes.forEach {
+                if (it == emptyByte) {
+                    emptyCount++
+                }
             }
-        }
-        println(bytes.toList())
 
-        // Some bytes will remain empty so cannot check if all indexes
-        // were filled. We're just trying to verify that something happened,
-        // so ensuring that 90% of the array was filled is good enough imo.
-        assertTrue(emptyCount < 10)
+            // Some indices will remain empty so cannot check if all were
+            // filled. Must adjust our limit depending on size to mitigate
+            // false positives.
+            val emptyLimit = when {
+                size < 200 -> 0.03F
+                size < 1000 -> 0.02F
+                else -> 0.0075F
+            }.let { pctErr ->
+                (size * pctErr).toInt()
+            }
+
+            assertTrue(
+                actual = emptyCount <= emptyLimit,
+                message = "size=$size,emptyLimit=$emptyLimit,emptyCount=$emptyCount"
+            )
+        }
     }
 }
