@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+@file:Suppress("SpellCheckingInspection", "UnnecessaryOptInAnnotation")
+
 package io.matthewnelson.component.secure.random.internal
 
 import kotlinx.cinterop.*
@@ -30,6 +32,7 @@ import kotlin.native.concurrent.AtomicInt
 internal class GetRandom private constructor() {
 
     internal companion object {
+        const val NO_FLAGS: UInt = 0U
         // https://docs.piston.rs/dev_menu/libc/constant.SYS_getrandom.html
         private const val SYS_getrandom: Long = 318L
         // https://docs.piston.rs/dev_menu/libc/constant.GRND_NONBLOCK.html
@@ -113,7 +116,7 @@ internal class GetRandom private constructor() {
     internal fun getrandom(
         buf: CPointer<ByteVar>,
         buflen: size_t,
-        flags: u_int,
+        flags: u_int = NO_FLAGS,
     ): Int {
         @Suppress("RemoveRedundantCallsOfConversionMethods")
         return syscall(SYS_getrandom.convert(), buf, buflen, flags).toInt()

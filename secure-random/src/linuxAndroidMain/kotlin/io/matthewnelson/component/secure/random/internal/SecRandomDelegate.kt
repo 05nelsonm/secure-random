@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+@file:Suppress("UnnecessaryOptInAnnotation")
+
 package io.matthewnelson.component.secure.random.internal
 
 import io.matthewnelson.component.secure.random.SecRandomCopyException
@@ -37,7 +39,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
             if (GetRandom.instance.isAvailable()) {
                 @OptIn(UnsafeNumber::class)
-                val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert(), 0u)
+                val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert())
                 if (result < 0) {
                     throw SecRandomCopyException(errnoToString(result))
                 }
