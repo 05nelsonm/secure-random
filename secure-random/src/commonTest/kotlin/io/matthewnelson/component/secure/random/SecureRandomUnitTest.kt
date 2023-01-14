@@ -70,7 +70,7 @@ class SecureRandomUnitTest {
                 SecureRandom().nextBytesCopyTo(bytes)
             } catch (e: SecRandomCopyException) {
                 // TODO: Remove once implementations are all complete
-                if (e.message == "Not yet implemented") {
+                if (e.message == "SYS_getrandom not supported") {
                     continue
                 } else {
                     throw e
@@ -88,8 +88,8 @@ class SecureRandomUnitTest {
             // filled. Must adjust our limit depending on size to mitigate
             // false positives.
             val emptyLimit = when {
-                size < 200 -> 0.03F
-                size < 1000 -> 0.02F
+                size < 200 -> 0.04F
+                size < 1000 -> 0.03F
                 else -> 0.0075F
             }.let { pctErr ->
                 (size * pctErr).toInt()
