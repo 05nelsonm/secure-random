@@ -14,15 +14,20 @@
  * limitations under the License.
  **/
 
+import io.matthewnelson.component.secure.random.SecRandomCopyException
 import io.matthewnelson.component.secure.random.SecureRandom
 
 fun runSecureRandom() {
-    val bytes = try {
-        SecureRandom().nextBytesOf(50)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return
-    }
+    val sRandom = SecureRandom()
 
-    println(bytes.toList())
+    for (i in 10..20) {
+        val bytes = try {
+            sRandom.nextBytesOf(i).toList()
+        } catch (e: SecRandomCopyException) {
+            e.printStackTrace()
+            return
+        }
+
+        println("$i: $bytes")
+    }
 }

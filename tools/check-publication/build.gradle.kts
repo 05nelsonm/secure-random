@@ -59,7 +59,7 @@ kmpConfiguration {
 //            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
-//        KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
+        KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
         KmpTarget.NonJvm.Native.Unix.Darwin.Ios.ALL_DEFAULT     +
         KmpTarget.NonJvm.Native.Unix.Darwin.Macos.ALL_DEFAULT   +
         KmpTarget.NonJvm.Native.Unix.Darwin.Tvos.ALL_DEFAULT    +
