@@ -16,7 +16,6 @@
  **/
 package io.matthewnelson.component.secure.random.internal
 
-import io.matthewnelson.component.secure.random.NoSuchAlgorithmException
 import io.matthewnelson.component.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
@@ -26,30 +25,19 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-    // Default instance
-    internal actual companion object: SecRandomDelegate() {
+    internal actual companion object {
 
-        @Throws(SecRandomCopyException::class)
-        actual override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+        actual fun instance(): SecRandomDelegate {
             // TODO: Implement (Issue #4)
-            // TODO: Throw on failure
-            throw SecRandomCopyException("Not yet implemented")
+            return SecRandomDelegateLinux
         }
     }
 
-    internal actual class Strong private actual constructor(): SecRandomDelegate() {
+    private object SecRandomDelegateLinux: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
             throw SecRandomCopyException("Not yet implemented")
         }
-
-        internal actual companion object {
-            @Throws(NoSuchAlgorithmException::class)
-            internal actual fun instance(): Strong {
-                throw NoSuchAlgorithmException("Not yet implemented")
-            }
-        }
     }
-
 }

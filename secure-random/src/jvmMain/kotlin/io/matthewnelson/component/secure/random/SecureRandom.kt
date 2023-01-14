@@ -20,15 +20,9 @@ import io.matthewnelson.component.secure.random.internal.commonNextBytesOf
 /**
  * A cryptographically strong random number generator (RNG).
  *
- * @see [instanceStrong]
  * @see [java.security.SecureRandom]
  * */
-public actual class SecureRandom {
-
-    private val delegate: java.security.SecureRandom
-
-    private constructor(delegate: java.security.SecureRandom) { this.delegate = delegate }
-    public actual constructor(): this(java.security.SecureRandom())
+public actual class SecureRandom public actual constructor(): java.security.SecureRandom() {
 
     /**
      * Returns a [ByteArray] of size [count], filled with
@@ -47,22 +41,7 @@ public actual class SecureRandom {
      * */
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            delegate.nextBytes(this)
-        }
-    }
-
-    public actual companion object {
-
-        /**
-         * Returns a strong instance suitable for private key generation.
-         *
-         * @see [java.security.SecureRandom.getInstanceStrong]
-         * @throws [NoSuchAlgorithmException] if no algorithm is available
-         * */
-        @JvmStatic
-        @Throws(NoSuchAlgorithmException::class)
-        public actual fun instanceStrong(): SecureRandom {
-            return SecureRandom(java.security.SecureRandom.getInstanceStrong())
+            super.nextBytes(this)
         }
     }
 }
