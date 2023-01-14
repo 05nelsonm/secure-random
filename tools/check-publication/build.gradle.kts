@@ -32,7 +32,30 @@ includeStagingRepoIfTrue(!pConfig.isSnapshotVersion)
 kmpConfiguration {
     setupMultiplatform(targets=
         setOf(
-            KmpTarget.Jvm.Jvm(kotlinJvmTarget = JavaVersion.VERSION_1_8),
+            KmpTarget.Jvm.Android(
+                buildTools = versions.android.buildTools,
+                compileSdk = versions.android.sdkCompile,
+                minSdk = versions.android.sdkMin19, // KitKat (4.4)
+                namespace = "io.matthewnelson.component.tools.check.publication",
+                compileSourceOption = JavaVersion.VERSION_1_8,
+                compileTargetOption = JavaVersion.VERSION_1_8,
+                kotlinJvmTarget = JavaVersion.VERSION_1_8,
+                mainSourceSet = {
+                    dependencies {
+                        implementation("${pConfig.group}:secure-random-android:${pConfig.versionName}")
+                    }
+                }
+            ),
+
+            KmpTarget.Jvm.Jvm(
+                kotlinJvmTarget = JavaVersion.VERSION_1_8,
+                mainSourceSet = {
+                    dependencies {
+                        implementation("${pConfig.group}:secure-random-jvm:${pConfig.versionName}")
+                    }
+                }
+            ),
+
 //            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
@@ -40,9 +63,9 @@ kmpConfiguration {
         KmpTarget.NonJvm.Native.Unix.Darwin.Ios.ALL_DEFAULT     +
         KmpTarget.NonJvm.Native.Unix.Darwin.Macos.ALL_DEFAULT   +
         KmpTarget.NonJvm.Native.Unix.Darwin.Tvos.ALL_DEFAULT    +
-        KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.ALL_DEFAULT/* +
+        KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.ALL_DEFAULT +
         KmpTarget.NonJvm.Native.Unix.Linux.ALL_DEFAULT          +
-        KmpTarget.NonJvm.Native.Mingw.ALL_DEFAULT               +
+        KmpTarget.NonJvm.Native.Mingw.ALL_DEFAULT/*               +
         KmpTarget.NonJvm.Native.Wasm.ALL_DEFAULT*/,
 
         commonMainSourceSet = {

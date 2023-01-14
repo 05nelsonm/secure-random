@@ -23,17 +23,19 @@ plugins {
 kmpConfiguration {
     setupMultiplatform(targets=
         setOf(
-            KmpTarget.Jvm.Jvm(
+            KmpTarget.Jvm.Android(
+                buildTools = versions.android.buildTools,
+                compileSdk = versions.android.sdkCompile,
+                minSdk = versions.android.sdkMin19, // KitKat (4.4)
+                namespace = "io.matthewnelson.component.secure.random",
+                compileSourceOption = JavaVersion.VERSION_1_8,
+                compileTargetOption = JavaVersion.VERSION_1_8,
                 kotlinJvmTarget = JavaVersion.VERSION_1_8,
                 target = {
-                    withJava()
-
-                    extensions.configure<JavaPluginExtension> {
-                        sourceCompatibility = JavaVersion.VERSION_1_8
-                        targetCompatibility = JavaVersion.VERSION_1_8
-                    }
+                    publishLibraryVariants("release")
                 }
             ),
+            KmpTarget.Jvm.Jvm(kotlinJvmTarget = JavaVersion.VERSION_1_8),
 //            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +

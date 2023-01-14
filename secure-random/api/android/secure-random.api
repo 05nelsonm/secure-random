@@ -1,0 +1,20 @@
+public final class io/matthewnelson/component/secure/random/BuildConfig {
+	public static final field BUILD_TYPE Ljava/lang/String;
+	public static final field DEBUG Z
+	public static final field LIBRARY_PACKAGE_NAME Ljava/lang/String;
+	public fun <init> ()V
+}
+
+public final class io/matthewnelson/component/secure/random/SecRandomCopyException : java/lang/RuntimeException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public final class io/matthewnelson/component/secure/random/SecureRandom : java/security/SecureRandom {
+	public fun <init> ()V
+	public final fun nextBytesCopyTo ([B)V
+	public final fun nextBytesOf (I)[B
+}
+

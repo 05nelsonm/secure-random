@@ -26,6 +26,7 @@ buildscript {
 
     dependencies {
         classpath(pluginDeps.kotlin.gradle)
+        classpath(pluginDeps.android.gradle)
         classpath(pluginDeps.mavenPublish)
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -68,4 +69,24 @@ kmpPublish {
         versionCode = /*00_0 */1_01_99,
         pomInceptionYear = 2023,
     )
+}
+
+@Suppress("LocalVariableName")
+apiValidation {
+    val KMP_TARGETS = findProperty("KMP_TARGETS") as? String
+    val CHECK_PUBLICATION = findProperty("CHECK_PUBLICATION") as? String
+    val KMP_TARGETS_ALL = System.getProperty("KMP_TARGETS_ALL") != null
+    val TARGETS = KMP_TARGETS?.split(',')
+
+    if (CHECK_PUBLICATION != null) {
+        ignoredProjects.add("check-publication")
+    } else {
+        val JVM = TARGETS?.contains("JVM") != false
+        val ANDROID = TARGETS?.contains("ANDROID") != false
+
+        // Only check if building both Android and Jvm
+        if (!(KMP_TARGETS_ALL || (ANDROID && JVM))) {
+            ignoredProjects.add("secure-random")
+        }
+    }
 }
