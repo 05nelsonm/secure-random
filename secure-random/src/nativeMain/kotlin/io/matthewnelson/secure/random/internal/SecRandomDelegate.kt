@@ -13,37 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import io.matthewnelson.secure.random.SecureRandom
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
 
-fun runSecureRandom() {
-    val sRandom = SecureRandom()
+internal expect abstract class SecRandomDelegate private constructor() {
 
-    for (i in 10..20) {
-        val bytes = try {
-            sRandom.nextBytesOf(i).toList()
-        } catch (e: SecRandomCopyException) {
-            e.printStackTrace()
-            return
-        }
+    @Throws(SecRandomCopyException::class)
+    internal abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
 
-        println("$i: $bytes")
-    }
+    internal companion object {
 
-    listOf(
-        500,
-        5000,
-        50000,
-    ).forEach { i ->
-
-        try {
-            sRandom.nextBytesOf(5000)
-        } catch (e: SecRandomCopyException) {
-            e.printStackTrace()
-            return
-        }
-
-        println("$i: omitted (success)")
+        internal fun instance(): SecRandomDelegate
     }
 }
