@@ -18,8 +18,6 @@ package io.matthewnelson.secure.random.internal
 import io.matthewnelson.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.UnsafeNumber
-import kotlinx.cinterop.convert
 
 internal actual abstract class SecRandomDelegate private actual constructor() {
 
@@ -41,20 +39,15 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            @OptIn(UnsafeNumber::class)
-            val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert())
-            if (result < 0) {
-                throw SecRandomCopyException(errnoToString(result))
-            }
+            GetRandom.instance.getrandom(ptrBytes, size)
         }
     }
 
-    // TODO: Add fallback (Issue #25)
-    private object SecRandomDelegateURandom: SecRandomDelegate() {
+    internal object SecRandomDelegateURandom: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            throw SecRandomCopyException("SYS_getrandom not supported")
+            URandom.instance.readBytesTo(ptrBytes, size)
         }
     }
 }

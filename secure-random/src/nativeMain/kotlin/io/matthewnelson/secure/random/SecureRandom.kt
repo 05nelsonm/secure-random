@@ -24,16 +24,20 @@ import kotlinx.cinterop.usePinned
 /**
  * A cryptographically strong random number generator (RNG).
  * */
-public actual class SecureRandom public actual constructor() {
+public actual class SecureRandom {
 
-    private val nativeDelegate: SecRandomDelegate = SecRandomDelegate.instance()
+    private val delegate: SecRandomDelegate
+
+    public actual constructor(): this(SecRandomDelegate.instance())
+    internal constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
+
 
     /**
      * Returns a [ByteArray] of size [count], filled with
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
-     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
+     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed.
      * */
     @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
@@ -42,14 +46,14 @@ public actual class SecureRandom public actual constructor() {
      * Fills a [ByteArray] with securely generated random data.
      * Does nothing if [bytes] is null or empty.
      *
-     * @throws [SecRandomCopyException] if procurement of securely random data failed
+     * @throws [SecRandomCopyException] if procurement of securely random data failed.
      * */
     @Throws(SecRandomCopyException::class)
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
             usePinned { pinned ->
                 memScoped {
-                    nativeDelegate.nextBytesCopyTo(size, pinned.addressOf(0))
+                    delegate.nextBytesCopyTo(size, pinned.addressOf(0))
                 }
             }
         }

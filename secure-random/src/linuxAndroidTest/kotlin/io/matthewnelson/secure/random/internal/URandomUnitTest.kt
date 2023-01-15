@@ -15,7 +15,22 @@
  **/
 package io.matthewnelson.secure.random.internal
 
-import kotlinx.cinterop.toKStringFromUtf8
-import platform.posix.strerror
+import io.matthewnelson.secure.random.EnsureFilledHelper
+import io.matthewnelson.secure.random.SecureRandom
+import kotlin.test.Test
 
-internal fun errnoToString(errno: Int): String = strerror(errno)?.toKStringFromUtf8() ?: "errno: $errno"
+class URandomUnitTest: EnsureFilledHelper() {
+
+    override val sRandom: SecureRandom = SecureRandom(SecRandomDelegate.SecRandomDelegateURandom)
+
+    @Test
+    override fun givenByteArray_whenNextBytes_thenIsFilledWithData() {
+        if (!GetRandom.instance.isAvailable()) {
+            // commonTest will fall back to use URandom, and we
+            // do not need to double test it here.
+            return
+        }
+
+        super.givenByteArray_whenNextBytes_thenIsFilledWithData()
+    }
+}
