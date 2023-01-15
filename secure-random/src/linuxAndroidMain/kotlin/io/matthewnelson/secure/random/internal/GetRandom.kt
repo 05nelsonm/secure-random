@@ -17,15 +17,12 @@
 
 package io.matthewnelson.secure.random.internal
 
+import io.matthewnelson.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.convert
-import platform.posix.ENOSYS
-import platform.posix.EPERM
-import platform.posix.size_t
-import platform.posix.syscall
-import platform.posix.u_int
+import platform.posix.*
 
 /**
  * Helper for:
@@ -53,7 +50,6 @@ internal class GetRandom private constructor(): SecRandomPoller() {
         return pollingResult { buf, size ->
             @OptIn(UnsafeNumber::class)
             val result = getrandom(buf, size.toULong().convert(), GRND_NONBLOCK)
-
             if (result < 0) {
                 when (result) {
                     ENOSYS, // No kernel support
@@ -72,7 +68,11 @@ internal class GetRandom private constructor(): SecRandomPoller() {
      * Must always call [isAvailable] beforehand.
      * */
     @OptIn(UnsafeNumber::class)
-    internal fun getrandom(buf: CPointer<ByteVar>, buflen: size_t): Int = getrandom(buf, buflen, NO_FLAGS)
+    @Throws(SecRandomCopyException::class)
+    internal fun getrandom(buf: CPointer<ByteVar>, buflen: Int) {
+        val result = getrandom(buf, buflen.toULong().convert(), NO_FLAGS)
+        if (result < 0) throw SecRandomCopyException(errnoToString(result))
+    }
 
     @OptIn(UnsafeNumber::class)
     private fun getrandom(
@@ -80,7 +80,6 @@ internal class GetRandom private constructor(): SecRandomPoller() {
         buflen: size_t,
         flags: u_int,
     ): Int {
-        @Suppress("RemoveRedundantCallsOfConversionMethods")
-        return syscall(SYS_getrandom.convert(), buf, buflen, flags).toInt()
+        return syscall(SYS_getrandom.convert(), buf, buflen, flags).convert()
     }
 }

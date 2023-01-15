@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-@file:Suppress("UnnecessaryOptInAnnotation")
-
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.UnsafeNumber
-import kotlinx.cinterop.convert
 
 internal actual abstract class SecRandomDelegate private actual constructor() {
 
@@ -43,11 +39,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            @OptIn(UnsafeNumber::class)
-            val result = GetRandom.instance.getrandom(ptrBytes, size.toULong().convert())
-            if (result < 0) {
-                throw SecRandomCopyException(errnoToString(result))
-            }
+            GetRandom.instance.getrandom(ptrBytes, size)
         }
     }
 
