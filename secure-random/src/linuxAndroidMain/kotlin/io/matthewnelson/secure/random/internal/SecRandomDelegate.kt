@@ -23,22 +23,15 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
-    internal actual companion object {
-
-        actual fun instance(): SecRandomDelegate {
-            return if (GetRandom.instance.isAvailable()) {
-                SecRandomDelegateGetRandom
-            } else {
-                SecRandomDelegateURandom
-            }
-        }
-    }
-
-    private object SecRandomDelegateGetRandom: SecRandomDelegate() {
+    internal actual companion object: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
-            GetRandom.instance.getrandom(bytes, size)
+        actual override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
+            if (GetRandom.instance.isAvailable()) {
+                GetRandom.instance.getrandom(bytes, size)
+            } else {
+                SecRandomDelegateURandom.nextBytesCopyTo(bytes, size)
+            }
         }
     }
 
