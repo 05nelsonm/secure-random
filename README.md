@@ -1,4 +1,4 @@
-# component-secure-random
+# secure-random
 [![badge-license]][url-license]
 <!--
 [![badge-latest-release]][url-latest-release]
