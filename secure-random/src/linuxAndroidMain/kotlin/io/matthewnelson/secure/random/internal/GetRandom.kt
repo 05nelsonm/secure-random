@@ -51,7 +51,7 @@ internal class GetRandom private constructor(): SecRandomPoller() {
             @OptIn(UnsafeNumber::class)
             val result = getrandom(buf, size.toULong().convert(), GRND_NONBLOCK)
             if (result < 0) {
-                when (result) {
+                when (errno) {
                     ENOSYS, // No kernel support
                     EPERM, // Blocked by seccomp
                     -> false
@@ -71,7 +71,7 @@ internal class GetRandom private constructor(): SecRandomPoller() {
     @Throws(SecRandomCopyException::class)
     internal fun getrandom(buf: CPointer<ByteVar>, buflen: Int) {
         val result = getrandom(buf, buflen.toULong().convert(), NO_FLAGS)
-        if (result < 0) throw SecRandomCopyException(errnoToString(result))
+        if (result < 0) throw SecRandomCopyException(errnoToString(errno))
     }
 
     @OptIn(UnsafeNumber::class)
