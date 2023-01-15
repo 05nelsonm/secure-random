@@ -33,13 +33,14 @@ internal class URandom private constructor(): SecRandomPoller() {
     private val lock = Lock()
 
     @Throws(SecRandomCopyException::class)
-    internal fun readBytesTo(buf: CPointer<ByteVar>, buflen: Int) {
+    internal fun readBytesTo(buf: Pinned<ByteArray>, buflen: Int) {
         ensureSeeded()
         lock.withLock {
             @OptIn(UnsafeNumber::class)
             withReadOnlyFD("/dev/urandom") { fd ->
-                val result = read(fd, buf, buflen.toULong().convert())
-                if (result < 0) throw SecRandomCopyException(errnoToString(errno))
+                buf.fillCompletely(buflen) { ptr, length ->
+                    read(fd, ptr, length.toULong().convert()).convert()
+                }
             }
         }
     }
@@ -68,7 +69,7 @@ internal class URandom private constructor(): SecRandomPoller() {
                         when (val err = errno) {
                             EINTR,
                             EAGAIN -> continue
-                            else -> throw SecRandomCopyException(errnoToString(err))
+                            else -> throw errnoToSecRandomCopyException(err)
                         }
                     }
                 }
@@ -80,7 +81,7 @@ internal class URandom private constructor(): SecRandomPoller() {
 
     private fun withReadOnlyFD(path: String, block: (fd: Int) -> Unit) {
         val fd = open(path, O_RDONLY, null)
-        if (fd == -1) throw SecRandomCopyException(errnoToString(errno))
+        if (fd == -1) throw errnoToSecRandomCopyException(errno)
 
         try {
             block.invoke(fd)

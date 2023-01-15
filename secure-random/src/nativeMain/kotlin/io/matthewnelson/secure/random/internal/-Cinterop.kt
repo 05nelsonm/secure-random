@@ -15,7 +15,11 @@
  **/
 package io.matthewnelson.secure.random.internal
 
+import io.matthewnelson.secure.random.SecRandomCopyException
 import kotlinx.cinterop.toKStringFromUtf8
 import platform.posix.strerror
 
-internal fun errnoToString(errno: Int): String = strerror(errno)?.toKStringFromUtf8() ?: "errno: $errno"
+internal fun errnoToSecRandomCopyException(errno: Int): SecRandomCopyException {
+    val message = strerror(errno)?.toKStringFromUtf8() ?: "errno: $errno"
+    return SecRandomCopyException(message)
+}

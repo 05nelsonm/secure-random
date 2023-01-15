@@ -16,8 +16,8 @@
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.Pinned
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.reinterpret
 import platform.windows.BCRYPT_USE_SYSTEM_PREFERRED_RNG
@@ -31,7 +31,7 @@ import platform.windows.STATUS_INVALID_PARAMETER
 internal actual abstract class SecRandomDelegate private actual constructor() {
 
     @Throws(SecRandomCopyException::class)
-    internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
+    internal actual abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
     internal actual companion object {
 
@@ -44,10 +44,10 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     private object SecRandomDelegateMingwVistaSP2: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+        override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
             val status = BCryptGenRandom(
                 null,
-                ptrBytes.reinterpret(),
+                bytes.addressOf(0).reinterpret(),
                 size.toULong().convert(),
                 BCRYPT_USE_SYSTEM_PREFERRED_RNG,
             ).toUInt()
