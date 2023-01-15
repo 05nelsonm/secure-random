@@ -1,4 +1,4 @@
-rootProject.name = "component-secure-random"
+rootProject.name = "secure-random"
 
 includeBuild("kotlin-components/includeBuild/dependencies")
 includeBuild("kotlin-components/includeBuild/kmp")
