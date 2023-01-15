@@ -62,12 +62,14 @@ class SecureRandomUnitTest {
             webLimit * 2,
         )
 
+        val sRandom = SecureRandom()
+
         for (size in sizes) {
             val bytes = ByteArray(size)
             val emptyByte = bytes[0]
 
             try {
-                SecureRandom().nextBytesCopyTo(bytes)
+                sRandom.nextBytesCopyTo(bytes)
             } catch (e: SecRandomCopyException) {
                 // TODO: Remove once implementations are all complete
                 if (e.message == "SYS_getrandom not supported") {
