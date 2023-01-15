@@ -38,7 +38,7 @@ fun runSecureRandom() {
     ).forEach { i ->
 
         try {
-            sRandom.nextBytesOf(5000)
+            sRandom.nextBytesOf(i)
         } catch (e: SecRandomCopyException) {
             e.printStackTrace()
             return
