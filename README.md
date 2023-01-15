@@ -70,7 +70,7 @@ This project utilizes git submodules. You will need to initialize them when
 cloning the repository via:
 
 ```bash
-$ git clone --recursive https://github.com/05nelsonm/component-secure-random.git
+$ git clone --recursive https://github.com/05nelsonm/secure-random.git
 ```
 
 If you've already cloned the repository, run:
@@ -108,7 +108,7 @@ $ git pull --recurse-submodules
 [badge-support-apple-silicon]: http://img.shields.io/badge/support-[AppleSilicon]-43BBFF.svg?style=flat
 [badge-support-js-ir]: https://img.shields.io/badge/support-[js--IR]-AAC4E0.svg?style=flat
 
-[url-latest-release]: https://github.com/05nelsonm/component-secure-random/releases/latest
+[url-latest-release]: https://github.com/05nelsonm/secure-random/releases/latest
 [url-license]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [url-kotlin]: https://kotlinlang.org
 [url-kotlin-components]: https://kotlin-components.matthewnelson.io
