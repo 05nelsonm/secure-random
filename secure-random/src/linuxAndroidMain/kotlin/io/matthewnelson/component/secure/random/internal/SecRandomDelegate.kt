@@ -51,11 +51,11 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
         }
     }
 
+    // TODO: Add fallback (Issue #25)
     private object SecRandomDelegateURandom: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
-            // TODO: Add fallback (Issue #25)
             throw SecRandomCopyException("SYS_getrandom not supported")
         }
     }

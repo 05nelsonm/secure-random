@@ -30,4 +30,20 @@ fun runSecureRandom() {
 
         println("$i: $bytes")
     }
+
+    listOf(
+        500,
+        5000,
+        50000,
+    ).forEach { i ->
+
+        try {
+            sRandom.nextBytesOf(5000)
+        } catch (e: SecRandomCopyException) {
+            e.printStackTrace()
+            return
+        }
+
+        println("$i: omitted (success)")
+    }
 }
