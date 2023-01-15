@@ -85,6 +85,12 @@ kmpConfiguration {
                     }
                 }
             }
+
+            sourceSetLinuxX64Test {
+                dependencies {
+                    implementation(depsTest.kotlin.coroutines)
+                }
+            }
         }
     )
 }
