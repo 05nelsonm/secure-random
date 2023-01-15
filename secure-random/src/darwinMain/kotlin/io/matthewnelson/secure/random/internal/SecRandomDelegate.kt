@@ -46,7 +46,7 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
             // kSecRandomDefault is synonymous to NULL
             val errno: Int = SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), bytes.addressOf(0))
             if (errno != 0) {
-                throw SecRandomCopyException(errnoToString(errno))
+                throw errnoToSecRandomCopyException(errno)
             }
         }
     }

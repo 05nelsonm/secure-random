@@ -67,8 +67,9 @@ internal class GetRandom private constructor(): SecRandomPoller() {
     @OptIn(UnsafeNumber::class)
     @Throws(SecRandomCopyException::class)
     internal fun getrandom(buf: Pinned<ByteArray>, buflen: Int) {
-        val result = getrandom(buf.addressOf(0), buflen.toULong().convert(), NO_FLAGS)
-        if (result < 0) throw SecRandomCopyException(errnoToString(errno))
+        buf.fillCompletely(buflen) { ptr, len ->
+            getrandom(ptr, len.toULong().convert(), NO_FLAGS)
+        }
     }
 
     @OptIn(UnsafeNumber::class)

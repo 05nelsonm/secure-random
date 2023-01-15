@@ -16,10 +16,30 @@
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import kotlinx.cinterop.toKStringFromUtf8
-import platform.posix.strerror
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.Pinned
+import kotlinx.cinterop.addressOf
+import platform.posix.EINTR
+import platform.posix.errno
 
-internal fun errnoToSecRandomCopyException(errno: Int): SecRandomCopyException {
-    val message = strerror(errno)?.toKStringFromUtf8() ?: "errno: $errno"
-    return SecRandomCopyException(message)
+internal fun Pinned<ByteArray>.fillCompletely(
+    size: Int,
+    block: (ptr: CPointer<ByteVar>, length: Int) -> Int
+) {
+    var index = 0
+    while (index < size) {
+
+        val remainder = size - index
+        val result = block.invoke(addressOf(index), remainder)
+
+        if (result < 0) {
+            when (val err = errno) {
+                EINTR -> continue // Retry
+                else -> throw errnoToSecRandomCopyException(err)
+            }
+        } else {
+            index = result
+        }
+    }
 }
