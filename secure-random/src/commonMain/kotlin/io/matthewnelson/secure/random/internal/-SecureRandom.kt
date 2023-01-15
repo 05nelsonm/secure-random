@@ -13,37 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
 import io.matthewnelson.secure.random.SecureRandom
 
-fun runSecureRandom() {
-    val sRandom = SecureRandom()
-
-    for (i in 10..20) {
-        val bytes = try {
-            sRandom.nextBytesOf(i).toList()
-        } catch (e: SecRandomCopyException) {
-            e.printStackTrace()
-            return
-        }
-
-        println("$i: $bytes")
-    }
-
-    listOf(
-        500,
-        5000,
-        50000,
-    ).forEach { i ->
-
-        try {
-            sRandom.nextBytesOf(5000)
-        } catch (e: SecRandomCopyException) {
-            e.printStackTrace()
-            return
-        }
-
-        println("$i: omitted (success)")
-    }
+@Suppress("NOTHING_TO_INLINE")
+@Throws(IllegalArgumentException::class, SecRandomCopyException::class)
+internal inline fun SecureRandom.commonNextBytesOf(count: Int): ByteArray {
+    require(count >= 0) { "count cannot be negative" }
+    val bytes = ByteArray(count)
+    nextBytesCopyTo(bytes)
+    return bytes
 }

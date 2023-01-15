@@ -28,7 +28,7 @@ kmpConfiguration {
                 buildTools = versions.android.buildTools,
                 compileSdk = versions.android.sdkCompile,
                 minSdk = versions.android.sdkMin19, // KitKat (4.4)
-                namespace = "io.matthewnelson.component.secure.random",
+                namespace = "io.matthewnelson.secure.random",
                 compileSourceOption = JavaVersion.VERSION_1_8,
                 compileTargetOption = JavaVersion.VERSION_1_8,
                 kotlinJvmTarget = JavaVersion.VERSION_1_8,
