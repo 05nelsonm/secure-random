@@ -18,10 +18,7 @@
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.UnsafeNumber
-import kotlinx.cinterop.convert
+import kotlinx.cinterop.*
 import platform.posix.*
 
 /**
@@ -69,8 +66,8 @@ internal class GetRandom private constructor(): SecRandomPoller() {
      * */
     @OptIn(UnsafeNumber::class)
     @Throws(SecRandomCopyException::class)
-    internal fun getrandom(buf: CPointer<ByteVar>, buflen: Int) {
-        val result = getrandom(buf, buflen.toULong().convert(), NO_FLAGS)
+    internal fun getrandom(buf: Pinned<ByteArray>, buflen: Int) {
+        val result = getrandom(buf.addressOf(0), buflen.toULong().convert(), NO_FLAGS)
         if (result < 0) throw SecRandomCopyException(errnoToString(errno))
     }
 

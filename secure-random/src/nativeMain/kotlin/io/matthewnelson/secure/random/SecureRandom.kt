@@ -17,7 +17,6 @@ package io.matthewnelson.secure.random
 
 import io.matthewnelson.secure.random.internal.commonNextBytesOf
 import io.matthewnelson.secure.random.internal.SecRandomDelegate
-import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.usePinned
 
@@ -53,7 +52,7 @@ public actual class SecureRandom {
         bytes.ifNotNullOrEmpty {
             usePinned { pinned ->
                 memScoped {
-                    delegate.nextBytesCopyTo(size, pinned.addressOf(0))
+                    delegate.nextBytesCopyTo(pinned, size)
                 }
             }
         }

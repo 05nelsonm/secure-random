@@ -18,8 +18,8 @@
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.Pinned
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.convert
 import platform.Security.SecRandomCopyBytes
@@ -31,7 +31,7 @@ import platform.Security.kSecRandomDefault
 internal actual abstract class SecRandomDelegate private actual constructor() {
 
     @Throws(SecRandomCopyException::class)
-    internal actual abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
+    internal actual abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
     internal actual companion object {
 
@@ -42,9 +42,9 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
 
         @OptIn(UnsafeNumber::class)
         @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>) {
+        override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
             // kSecRandomDefault is synonymous to NULL
-            val errno: Int = SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), ptrBytes)
+            val errno: Int = SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), bytes.addressOf(0))
             if (errno != 0) {
                 throw SecRandomCopyException(errnoToString(errno))
             }

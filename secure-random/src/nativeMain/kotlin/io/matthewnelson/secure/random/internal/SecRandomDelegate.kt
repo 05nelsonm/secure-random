@@ -16,13 +16,12 @@
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.Pinned
 
 internal expect abstract class SecRandomDelegate private constructor() {
 
     @Throws(SecRandomCopyException::class)
-    internal abstract fun nextBytesCopyTo(size: Int, ptrBytes: CPointer<ByteVar>)
+    internal abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
     internal companion object {
 

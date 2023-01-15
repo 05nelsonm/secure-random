@@ -33,12 +33,12 @@ internal class URandom private constructor(): SecRandomPoller() {
     private val lock = Lock()
 
     @Throws(SecRandomCopyException::class)
-    internal fun readBytesTo(buf: CPointer<ByteVar>, buflen: Int) {
+    internal fun readBytesTo(buf: Pinned<ByteArray>, buflen: Int) {
         ensureSeeded()
         lock.withLock {
             @OptIn(UnsafeNumber::class)
             withReadOnlyFD("/dev/urandom") { fd ->
-                val result = read(fd, buf, buflen.toULong().convert())
+                val result = read(fd, buf.addressOf(0), buflen.toULong().convert())
                 if (result < 0) throw SecRandomCopyException(errnoToString(errno))
             }
         }
