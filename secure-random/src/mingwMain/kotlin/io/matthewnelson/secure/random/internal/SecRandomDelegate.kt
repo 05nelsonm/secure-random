@@ -33,18 +33,10 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
-    internal actual companion object {
-
-        internal actual fun instance(): SecRandomDelegate {
-            // TODO: Add fallbacks for pre Vista SP2 (Issue #8)
-            return SecRandomDelegateMingwVistaSP2
-        }
-    }
-
-    private object SecRandomDelegateMingwVistaSP2: SecRandomDelegate() {
+    internal actual companion object: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
+        actual override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
             val status = BCryptGenRandom(
                 null,
                 bytes.addressOf(0).reinterpret(),

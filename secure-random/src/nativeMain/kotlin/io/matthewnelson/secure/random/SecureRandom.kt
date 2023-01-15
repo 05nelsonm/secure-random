@@ -26,7 +26,7 @@ public actual class SecureRandom {
 
     private val delegate: SecRandomDelegate
 
-    public actual constructor(): this(SecRandomDelegate.instance())
+    public actual constructor(): this(SecRandomDelegate)
     internal constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
 
     /**

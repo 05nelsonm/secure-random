@@ -33,16 +33,11 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
     @Throws(SecRandomCopyException::class)
     internal actual abstract fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int)
 
-    internal actual companion object {
-
-        internal actual fun instance(): SecRandomDelegate = SecRandomDelegateDarwin
-    }
-
-    private object SecRandomDelegateDarwin: SecRandomDelegate() {
+    internal actual companion object: SecRandomDelegate() {
 
         @OptIn(UnsafeNumber::class)
         @Throws(SecRandomCopyException::class)
-        override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
+        actual override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {
             // kSecRandomDefault is synonymous to NULL
             val errno: Int = SecRandomCopyBytes(kSecRandomDefault, size.toUInt().convert(), bytes.addressOf(0))
             if (errno != 0) {
