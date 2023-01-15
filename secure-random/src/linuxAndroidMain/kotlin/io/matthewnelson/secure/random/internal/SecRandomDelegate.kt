@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+@file:Suppress("UnnecessaryOptInAnnotation")
+
 package io.matthewnelson.secure.random.internal
 
 import io.matthewnelson.secure.random.SecRandomCopyException

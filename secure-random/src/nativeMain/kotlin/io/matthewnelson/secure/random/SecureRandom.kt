@@ -33,7 +33,7 @@ public actual class SecureRandom public actual constructor() {
      * securely generated random data.
      *
      * @throws [IllegalArgumentException] if [count] is negative.
-     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed
+     * @throws [SecRandomCopyException] if [nextBytesCopyTo] failed.
      * */
     @Throws(IllegalArgumentException::class, SecRandomCopyException::class)
     public actual fun nextBytesOf(count: Int): ByteArray = commonNextBytesOf(count)
@@ -42,7 +42,7 @@ public actual class SecureRandom public actual constructor() {
      * Fills a [ByteArray] with securely generated random data.
      * Does nothing if [bytes] is null or empty.
      *
-     * @throws [SecRandomCopyException] if procurement of securely random data failed
+     * @throws [SecRandomCopyException] if procurement of securely random data failed.
      * */
     @Throws(SecRandomCopyException::class)
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
