@@ -24,9 +24,13 @@ import kotlinx.cinterop.usePinned
 /**
  * A cryptographically strong random number generator (RNG).
  * */
-public actual class SecureRandom public actual constructor() {
+public actual class SecureRandom {
 
-    private val nativeDelegate: SecRandomDelegate = SecRandomDelegate.instance()
+    private val delegate: SecRandomDelegate
+
+    public actual constructor(): this(SecRandomDelegate.instance())
+    internal constructor(delegate: SecRandomDelegate) { this.delegate = delegate }
+
 
     /**
      * Returns a [ByteArray] of size [count], filled with
@@ -49,7 +53,7 @@ public actual class SecureRandom public actual constructor() {
         bytes.ifNotNullOrEmpty {
             usePinned { pinned ->
                 memScoped {
-                    nativeDelegate.nextBytesCopyTo(size, pinned.addressOf(0))
+                    delegate.nextBytesCopyTo(size, pinned.addressOf(0))
                 }
             }
         }
