@@ -45,7 +45,7 @@ internal fun Pinned<ByteArray>.fillCompletely(
                 else -> throw errnoToSecRandomCopyException(err)
             }
         } else {
-            index = result
+            index += result
         }
     }
 }
