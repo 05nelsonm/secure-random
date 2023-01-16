@@ -6,6 +6,8 @@
 
 ![badge-platform-android]
 ![badge-platform-jvm]
+![badge-platform-js]
+![badge-platform-js-node]
 ![badge-platform-linux]
 ![badge-platform-macos]
 ![badge-platform-ios]
@@ -14,12 +16,10 @@
 ![badge-platform-windows]
 ![badge-support-android-native]
 ![badge-support-apple-silicon]
+![badge-support-js-ir]
 
 <!--
-![badge-platform-js]
-![badge-platform-js-node]
 ![badge-platform-wasm]
-![badge-support-js-ir]
 -->
 
 Kotlin Multiplatform library for obtaining cryptographically 
@@ -77,7 +77,7 @@ See the [native sample](samples/native/README.md)
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("io.matthewnelson.kotlin-components:secure-random:0.1.1")
+    implementation("io.matthewnelson.kotlin-components:secure-random:0.1.2")
 }
 ```
 
@@ -86,7 +86,7 @@ dependencies {
 ```groovy
 // build.gradle
 dependencies {
-    implementation "io.matthewnelson.kotlin-components:secure-random:0.1.1"
+    implementation "io.matthewnelson.kotlin-components:secure-random:0.1.2"
 }
 ```
 
@@ -96,6 +96,7 @@ dependencies {
 
 | secure-random | kotlin |
 |:-------------:|:------:|
+|     0.1.2     | 1.8.0  |
 |     0.1.1     | 1.8.0  |
 |     0.1.0     | 1.8.0  |
 
@@ -121,7 +122,7 @@ $ git pull --recurse-submodules
 ```
 
 <!-- TAG_VERSION -->
-[badge-latest-release]: https://img.shields.io/badge/latest--release-0.1.1-blue.svg?style=flat
+[badge-latest-release]: https://img.shields.io/badge/latest--release-0.1.2-blue.svg?style=flat
 [badge-license]: https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat
 
 <!-- TAG_DEPENDENCIES -->
