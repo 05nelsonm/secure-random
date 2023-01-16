@@ -42,6 +42,8 @@ kmpConfiguration {
             ),
             KmpTarget.Jvm.Jvm(kotlinJvmTarget = JavaVersion.VERSION_1_8),
 
+            // TODO: Implement (Issue #37)
+            //  Also uncomment in :tools:check-publication build.gradle.kts
 //            KmpTarget.NonJvm.JS(
 //                compilerType = KotlinJsCompilerType.BOTH,
 //                browser = null,
@@ -51,7 +53,11 @@ kmpConfiguration {
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
         KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
+
+        // TODO: Implement (Issue #36)
+        //  Also uncomment in :tools:check-publication build.gradle.kts
 //        KmpTarget.NonJvm.Native.Wasm.ALL_DEFAULT                +
+
         KmpTarget.NonJvm.Native.Unix.Darwin.Ios.ALL_DEFAULT     +
         KmpTarget.NonJvm.Native.Unix.Darwin.Macos.ALL_DEFAULT   +
         KmpTarget.NonJvm.Native.Unix.Darwin.Tvos.ALL_DEFAULT    +
