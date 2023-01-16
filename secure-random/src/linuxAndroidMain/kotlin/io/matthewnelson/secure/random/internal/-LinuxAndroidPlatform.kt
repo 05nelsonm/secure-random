@@ -29,7 +29,7 @@ import platform.posix.errno
  * this ensures that the call is repeated until it has been
  * completely filled.
  * */
-internal fun Pinned<ByteArray>.fillCompletely(
+internal inline fun Pinned<ByteArray>.fillCompletely(
     size: Int,
     block: (ptr: CPointer<ByteVar>, length: Int) -> Int
 ) {
