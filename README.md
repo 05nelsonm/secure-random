@@ -24,13 +24,52 @@
 ![badge-support-js-ir]
 -->
 
-Kotlin Multiplatform library for `SecureRandom`
+Kotlin Multiplatform library for obtaining cryptographically 
+secure random data from the system. Modeled after Java's `SecureRandom` 
+class, it provides a simple API surface area. Under the hood it 
+utilizes system functions so that `SecureRandom` is accessible from 
+common code. 
+
+Heavily inspired by the [rust-random/getrandom][url-rust-random] crate 
+for the native Linux/Android implementation.
 
 A full list of `kotlin-components` projects can be found [HERE][url-kotlin-components]
 
 ### Example Usages
 
-TODO
+```kotlin
+fun main() {
+    val sRandom = SecureRandom()
+    val bytes: ByteArray = try {
+        sRandom.nextBytesOf(count = 20)
+    } catch (e: SecRandomCopyException) {
+        e.printStackTrace()
+        return
+    }
+
+    println(bytes.toList())
+}
+```
+
+```kotlin
+fun main() {
+    val sRandom = SecureRandom()
+    val bytes = ByteArray(20)
+    
+    try {
+        sRandom.nextBytesCopyTo(bytes)
+    } catch (e: SecRandomCopyException) {
+        e.printStackTrace()
+        return
+    }
+
+    println(bytes.toList())
+}
+```
+
+### Samples
+
+See the [native sample](samples/native/README.md) 
 
 ### Get Started
 
@@ -112,3 +151,4 @@ $ git pull --recurse-submodules
 [url-license]: https://www.apache.org/licenses/LICENSE-2.0.txt
 [url-kotlin]: https://kotlinlang.org
 [url-kotlin-components]: https://kotlin-components.matthewnelson.io
+[url-rust-random]: https://github.com/rust-random/getrandom
