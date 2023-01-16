@@ -15,6 +15,7 @@
  **/
 import io.matthewnelson.kotlin.components.kmp.KmpTarget
 import io.matthewnelson.kotlin.components.kmp.util.*
+import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 
 plugins {
     id(pluginId.kmp.configuration)
@@ -40,17 +41,23 @@ kmpConfiguration {
                 }
             ),
             KmpTarget.Jvm.Jvm(kotlinJvmTarget = JavaVersion.VERSION_1_8),
-//            KmpTarget.NonJvm.JS.DEFAULT,
+
+//            KmpTarget.NonJvm.JS(
+//                compilerType = KotlinJsCompilerType.BOTH,
+//                browser = null,
+//                node = KmpTarget.NonJvm.JS.Node()
+//            ),
+
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
         KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
+//        KmpTarget.NonJvm.Native.Wasm.ALL_DEFAULT                +
         KmpTarget.NonJvm.Native.Unix.Darwin.Ios.ALL_DEFAULT     +
         KmpTarget.NonJvm.Native.Unix.Darwin.Macos.ALL_DEFAULT   +
         KmpTarget.NonJvm.Native.Unix.Darwin.Tvos.ALL_DEFAULT    +
         KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.ALL_DEFAULT +
         KmpTarget.NonJvm.Native.Unix.Linux.ALL_DEFAULT          +
-        KmpTarget.NonJvm.Native.Mingw.ALL_DEFAULT/*               +
-        KmpTarget.NonJvm.Native.Wasm.ALL_DEFAULT*/,
+        KmpTarget.NonJvm.Native.Mingw.ALL_DEFAULT,
 
         commonTestSourceSet = {
             dependencies {
