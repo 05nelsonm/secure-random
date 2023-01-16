@@ -39,12 +39,14 @@ class FillCompletelyUnitTest {
 
             val fillSize = size / 3
 
+            var invocationCount = 0
             bytes.usePinned { pinned ->
                 pinned.fillCompletely(size) { ptr, _ ->
                     for (i in 0..fillSize) {
                         ptr[i] = 1
                     }
 
+                    invocationCount++
                     fillSize
                 }
             }
@@ -52,6 +54,8 @@ class FillCompletelyUnitTest {
             bytes.forEach { byte ->
                 assertEquals(1, byte)
             }
+
+            assertEquals(3, invocationCount)
         }
     }
 }
