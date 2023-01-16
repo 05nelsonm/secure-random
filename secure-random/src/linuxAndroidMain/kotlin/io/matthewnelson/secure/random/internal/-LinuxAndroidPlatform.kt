@@ -15,7 +15,6 @@
  **/
 package io.matthewnelson.secure.random.internal
 
-import io.matthewnelson.secure.random.SecRandomCopyException
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.Pinned
@@ -23,6 +22,13 @@ import kotlinx.cinterop.addressOf
 import platform.posix.EINTR
 import platform.posix.errno
 
+/**
+ * [GetRandom.getrandom] and [URandom.readBytesTo] return
+ * values (if positive) indicate the number of bytes that were
+ * put into the [ByteArray]. If it is less than the [size],
+ * this ensures that the call is repeated until it has been
+ * completely filled.
+ * */
 internal fun Pinned<ByteArray>.fillCompletely(
     size: Int,
     block: (ptr: CPointer<ByteVar>, length: Int) -> Int

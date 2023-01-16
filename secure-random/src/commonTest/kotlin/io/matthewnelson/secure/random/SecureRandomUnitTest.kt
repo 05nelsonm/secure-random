@@ -19,6 +19,9 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
+/**
+ * See [EnsureFilledHelper]
+ * */
 class SecureRandomUnitTest: EnsureFilledHelper() {
 
     override val sRandom = SecureRandom()

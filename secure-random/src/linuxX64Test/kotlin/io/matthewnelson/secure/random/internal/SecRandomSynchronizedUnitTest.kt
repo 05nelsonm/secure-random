@@ -24,29 +24,31 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SecRandomPollerUnitTest {
+class SecRandomSynchronizedUnitTest {
 
-    private class TestPoller: SecRandomPoller() {
+    private class TestSynchronized: SecRandomSynchronized() {
         private val lock = Mutex(locked = true)
-        val count = AtomicInt(0)
-        val calledBeforeCompletion = AtomicInt(0)
+        val invocationCount = AtomicInt(0)
+        val loadedCount = AtomicInt(0)
 
-        suspend fun pollFailIfInvoked() {
-            val calledBefore = count.value == 0
+        suspend fun load() {
+            val calledBefore = invocationCount.value == 0
 
             lock.withLock {  }
 
-            pollingResult { _, _ ->
-                throw IllegalArgumentException("Polling was allowed to be invoked multiple times")
+            synchronizedRemember { _, _ ->
+                // lambda should only ever be invoked once and
+                // then always return the remembered value.
+                throw IllegalArgumentException("synchronizedRemember was invoked multiple times")
             }
 
             if (calledBefore) {
-                calledBeforeCompletion.increment()
+                loadedCount.increment()
             }
         }
 
-        fun pollTrigger() {
-            pollingResult { _, _ ->
+        fun trigger() {
+            synchronizedRemember { _, _ ->
 
                 lock.unlock()
 
@@ -57,21 +59,23 @@ class SecRandomPollerUnitTest {
                 true
             }
 
-            count.increment()
+            invocationCount.increment()
         }
     }
 
     @Test
     fun givenPollingResult_whenMultipleInvocations_thenOnlyPollsOnce() = runTest {
-        val poller = TestPoller()
+        val testSynchronized = TestSynchronized()
 
         val jobs = mutableListOf<Job>()
 
+        // load up the test class which will suspend
+        // until trigger is pulled
         val repeatTimes = 100
         repeat(repeatTimes) {
 
             launch {
-                poller.pollFailIfInvoked()
+                testSynchronized.load()
             }.let { job ->
                 jobs.add(job)
             }
@@ -79,17 +83,20 @@ class SecRandomPollerUnitTest {
 
         delay(500L)
 
+        // Trigger it from background thread which
+        // will block for 500ms, ensuring that all
+        // the load is put onto synchronizedRemember
         launch(Dispatchers.Default) {
-            poller.pollTrigger()
+            testSynchronized.trigger()
         }.join()
 
+        // Wait for everyone to finish
         for (job in jobs) {
             job.join()
         }
 
-
-        assertEquals(1, poller.count.value)
-        assertEquals(repeatTimes, poller.calledBeforeCompletion.value)
+        assertEquals(1, testSynchronized.invocationCount.value)
+        assertEquals(repeatTimes, testSynchronized.loadedCount.value)
     }
 }
 

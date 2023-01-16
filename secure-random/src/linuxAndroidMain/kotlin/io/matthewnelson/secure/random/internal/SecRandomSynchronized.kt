@@ -21,7 +21,7 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlin.native.concurrent.AtomicInt
 
-internal abstract class SecRandomPoller {
+internal abstract class SecRandomSynchronized {
 
     private companion object {
         private const val TRUE = 1
@@ -31,48 +31,63 @@ internal abstract class SecRandomPoller {
 
     private val result = AtomicInt(UNKNOWN)
 
-    protected fun pollingResult(poll: (buf: CPointer<ByteVar>, size: Int) -> Boolean): Boolean {
+    /**
+     * Synchronized execution of [action] such that it is only ever
+     * invoked once, and it's response stored in [result] which
+     * will be returned henceforth.
+     * */
+    protected fun synchronizedRemember(
+        action: (buf: CPointer<ByteVar>, size: Int) -> Boolean
+    ): Boolean {
         when (result.value) {
             TRUE -> return true
             FALSE -> return false
             else -> {
                 val buf = ByteArray(1)
-                val lock = buf.hashCode()
+
+                // Use the hashCode as the id for obtaining
+                // the lock for this invocation of
+                // synchronizedRemember
+                val lockId = buf.hashCode()
 
                 try {
-                    return startPolling(buf, lock, poll)
+                    return executeActionMaybe(buf, lockId, action)
                 } finally {
-                    // If for some reason value wasn't updated to t/f,
-                    // ensure the lock is reset back to UNKNOWN so that
-                    // it can be obtained again.
-                    result.compareAndSet(lock, UNKNOWN)
+                    // Ensure the lock is reset back to UNKNOWN
+                    // if it was not set to t/f so that it can
+                    // be obtained again
+                    result.compareAndSet(lockId, UNKNOWN)
                 }
             }
         }
     }
 
-    private fun startPolling(
+    private fun executeActionMaybe(
         buf: ByteArray,
-        lock: Int,
-        poll: (buf: CPointer<ByteVar>, size: Int) -> Boolean
+        lockId: Int,
+        action: (buf: CPointer<ByteVar>, size: Int) -> Boolean
     ): Boolean {
+
+        // Acquire the lock or return another invocation
+        // instance's result.
         while (true) {
             when (result.value) {
                 TRUE -> return true
                 FALSE -> return false
                 else -> {
-                    if (result.compareAndSet(UNKNOWN, lock)) {
+                    if (result.compareAndSet(UNKNOWN, lockId)) {
                         break
                     }
                 }
             }
         }
 
+        // Lock obtained. Execute and store result.
         val result: Boolean = buf.usePinned { pinned ->
-            poll.invoke(pinned.addressOf(0), buf.size)
+            action.invoke(pinned.addressOf(0), buf.size)
         }
 
-        this.result.compareAndSet(lock, if (result) TRUE else FALSE)
+        this.result.compareAndSet(lockId, if (result) TRUE else FALSE)
 
         return result
     }

@@ -30,12 +30,15 @@ internal actual abstract class SecRandomDelegate private actual constructor() {
             if (GetRandom.instance.isAvailable()) {
                 GetRandom.instance.getrandom(bytes, size)
             } else {
-                SecRandomDelegateURandom.nextBytesCopyTo(bytes, size)
+                DelegateURandom.nextBytesCopyTo(bytes, size)
             }
         }
     }
 
-    internal object SecRandomDelegateURandom: SecRandomDelegate() {
+    // Alternative fall back if getrandom is unavailable.
+    // It is here so that it can be tested via constructor
+    // injection into SecureRandom.
+    internal object DelegateURandom: SecRandomDelegate() {
 
         @Throws(SecRandomCopyException::class)
         override fun nextBytesCopyTo(bytes: Pinned<ByteArray>, size: Int) {

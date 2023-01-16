@@ -27,7 +27,10 @@ kmpConfiguration {
             KmpTarget.Jvm.Android(
                 buildTools = versions.android.buildTools,
                 compileSdk = versions.android.sdkCompile,
+
+                // https://android-developers.googleblog.com/2013/08/some-securerandom-thoughts.html
                 minSdk = versions.android.sdkMin19, // KitKat (4.4)
+
                 namespace = "io.matthewnelson.secure.random",
                 compileSourceOption = JavaVersion.VERSION_1_8,
                 compileTargetOption = JavaVersion.VERSION_1_8,
@@ -62,7 +65,7 @@ kmpConfiguration {
             val androidNativeMain = sourceSetAndroidNativeMain
 
             // If either linux or androidNative sources are available
-            if (!(linuxMain == null && androidNativeMain == null)) {
+            if (linuxMain != null || androidNativeMain != null) {
                 sourceSets {
                     val linuxAndroidMain by creating {
                         dependsOn(sourceSetNativeMain!!)
