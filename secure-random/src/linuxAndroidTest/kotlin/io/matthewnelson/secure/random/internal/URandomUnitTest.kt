@@ -21,7 +21,7 @@ import kotlin.test.Test
 
 class URandomUnitTest: EnsureFilledHelper() {
 
-    override val sRandom: SecureRandom = SecureRandom(SecRandomDelegate.SecRandomDelegateURandom)
+    override val sRandom: SecureRandom = SecureRandom(SecRandomDelegate.DelegateURandom)
 
     @Test
     override fun givenByteArray_whenNextBytes_thenIsFilledWithData() {

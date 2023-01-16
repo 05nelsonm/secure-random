@@ -23,15 +23,20 @@ import platform.posix.*
 
 /**
  * Helper for:
- *  - Determining if system has [getrandom] available
- *  - Utilizing the [getrandom] syscall
+ *  - Determining if system has [getrandom] available.
+ *  - Utilizing the [getrandom] syscall to obtain random
+ *    data from /dev/urandom.
  *
  * Must always check that [isAvailable] returns true before
  * calling [getrandom].
  *
  * https://man7.org/linux/man-pages/man2/getrandom.2.html
+ *
+ * @see [SecRandomSynchronized]
+ * @see [isAvailable]
+ * @see [getrandom]
  * */
-internal class GetRandom private constructor(): SecRandomPoller() {
+internal class GetRandom private constructor(): SecRandomSynchronized() {
 
     internal companion object {
         private const val NO_FLAGS: UInt = 0U
@@ -43,8 +48,12 @@ internal class GetRandom private constructor(): SecRandomPoller() {
         internal val instance = GetRandom()
     }
 
+    /**
+     * Performs a non-blocking check via [syscall] to check
+     * availability of [getrandom] on the system.
+     * */
     internal fun isAvailable(): Boolean {
-        return pollingResult { buf, size ->
+        return synchronizedRemember { buf, size ->
             @OptIn(UnsafeNumber::class)
             val result = getrandom(buf, size.toULong().convert(), GRND_NONBLOCK)
             if (result < 0) {
@@ -62,7 +71,8 @@ internal class GetRandom private constructor(): SecRandomPoller() {
     }
 
     /**
-     * Must always call [isAvailable] beforehand.
+     * Must always call [isAvailable] beforehand to ensure
+     * availability on the system.
      * */
     @OptIn(UnsafeNumber::class)
     @Throws(SecRandomCopyException::class)

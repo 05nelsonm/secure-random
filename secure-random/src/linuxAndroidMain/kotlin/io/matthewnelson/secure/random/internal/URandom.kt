@@ -22,7 +22,20 @@ import kotlinx.cinterop.*
 import platform.posix.*
 import kotlin.native.concurrent.AtomicInt
 
-internal class URandom private constructor(): SecRandomPoller() {
+/**
+ * Helper for:
+ *  - Ensuring /dev/random has been seeded
+ *  - Obtaining bytes from /dev/urandom
+ *
+ * Polling of /dev/random via [ensureSeeded] is always called
+ * to ensure that no data is read from /dev/urandom until there
+ * is adequate randomness generated. [ensureSeeded] only ever
+ * polls /dev/random once, afterwhich it does nothing.
+ *
+ * @see [SecRandomSynchronized]
+ * @see [readBytesTo]
+ * */
+internal class URandom private constructor(): SecRandomSynchronized() {
 
     internal companion object {
         private const val INFINITE_TIMEOUT = -1
@@ -32,9 +45,16 @@ internal class URandom private constructor(): SecRandomPoller() {
 
     private val lock = Lock()
 
+    /**
+     * Reads bytes from /dev/urandom of specified [buflen] into [buf].
+     *
+     * @see [withReadOnlyFD]
+     * @see [fillCompletely]
+     * */
     @Throws(SecRandomCopyException::class)
     internal fun readBytesTo(buf: Pinned<ByteArray>, buflen: Int) {
         ensureSeeded()
+
         lock.withLock {
             @OptIn(UnsafeNumber::class)
             withReadOnlyFD("/dev/urandom") { fd ->
@@ -46,11 +66,14 @@ internal class URandom private constructor(): SecRandomPoller() {
     }
 
     /**
-     * Poll /dev/random once and only once to ensure
-     * /dev/urandom is seeded and ready to use.
+     * Polls /dev/random once and only once to ensure /dev/urandom
+     * is ready to read from. Any sucessive calls to [ensureSeeded]
+     * will block until [synchronizedRemember]'s lambda is executed.
      * */
     private fun ensureSeeded() {
-        pollingResult { _, _ ->
+        synchronizedRemember { _, _ ->
+
+            // Will only ever be invoked once
             withReadOnlyFD("/dev/random") { fd ->
                 memScoped {
                     val pollFd = nativeHeap.alloc<pollfd>()
@@ -79,6 +102,10 @@ internal class URandom private constructor(): SecRandomPoller() {
         }
     }
 
+    /**
+     * Opens the file descriptor for [path] and then closes
+     * it once [block] completes.
+     * */
     private fun withReadOnlyFD(path: String, block: (fd: Int) -> Unit) {
         val fd = open(path, O_RDONLY, null)
         if (fd == -1) throw errnoToSecRandomCopyException(errno)
