@@ -35,12 +35,51 @@ public actual class SecureRandom public actual constructor() {
      * Fills a [ByteArray] with securely generated random data.
      * Does nothing if [bytes] is null or empty.
      *
+     * Node: https://nodejs.org/api/crypto.html#cryptorandomfillsyncbuffer-offset-size
+     * Browser: https://developer.mozilla.org/docs/Web/API/Crypto/getRandomValues
+     *
      * @throws [SecRandomCopyException] if procurement of securely random data failed.
      * */
     public actual fun nextBytesCopyTo(bytes: ByteArray?) {
         bytes.ifNotNullOrEmpty {
-            // TODO: Implement (Issue #37)
-            throw SecRandomCopyException("Not yet implemented")
+            try {
+                if (isNode) {
+                    _require("crypto").randomFillSync(this)
+                } else {
+                    global.crypto.getRandomValues(this)
+                }
+
+                Unit
+            } catch (t: Throwable) {
+                throw SecRandomCopyException("Failed to obtain bytes", t)
+            }
         }
+    }
+
+    private companion object {
+        private val isNode: Boolean by lazy {
+            val runtime: String? = try {
+                // May not be available, but should be preferred
+                // method of determining runtime environment.
+                js("(globalThis.process.release.name)") as String
+            } catch (_: Throwable) {
+                null
+            }
+
+            when (runtime) {
+                null -> {
+                    js("(typeof global !== 'undefined' && ({}).toString.call(global) == '[object global]')") as Boolean
+                }
+                "node" -> true
+                else -> false
+            }
+        }
+
+        private val global: dynamic by lazy {
+            js("((typeof global !== 'undefined') ? global : self)")
+        }
+
+        @Suppress("FunctionName", "UNUSED_PARAMETER")
+        private fun _require(name: String): dynamic = js("require(name)")
     }
 }
