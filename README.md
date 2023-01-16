@@ -1,8 +1,6 @@
 # secure-random
 [![badge-license]][url-license]
-<!--
 [![badge-latest-release]][url-latest-release]
--->
 
 [![badge-kotlin]][url-kotlin]
 
@@ -40,6 +38,7 @@ A full list of `kotlin-components` projects can be found [HERE][url-kotlin-compo
 ```kotlin
 fun main() {
     val sRandom = SecureRandom()
+
     val bytes: ByteArray = try {
         sRandom.nextBytesOf(count = 20)
     } catch (e: SecRandomCopyException) {
@@ -75,10 +74,6 @@ See the [native sample](samples/native/README.md)
 
 <!-- TAG_VERSION -->
 
-TODO
-
-<!--
-
 ```kotlin
 // build.gradle.kts
 dependencies {
@@ -86,14 +81,14 @@ dependencies {
 }
 ```
 
+<!-- TAG_VERSION -->
+
 ```groovy
 // build.gradle
 dependencies {
     implementation "io.matthewnelson.kotlin-components:secure-random:0.1.0"
 }
 ```
-
--->
 
 ### Kotlin Version Compatibility
 

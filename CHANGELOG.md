@@ -1,4 +1,4 @@
 # CHANGELOG
 
-## Version 0.1.0 (2023-01-20)
+## Version 0.1.0 (2023-01-16)
  - Initial Release
