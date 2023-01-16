@@ -15,7 +15,6 @@
  **/
 import io.matthewnelson.kotlin.components.kmp.KmpTarget
 import io.matthewnelson.kotlin.components.kmp.util.*
-import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 
 plugins {
     id(pluginId.kmp.configuration)
@@ -41,15 +40,7 @@ kmpConfiguration {
                 }
             ),
             KmpTarget.Jvm.Jvm(kotlinJvmTarget = JavaVersion.VERSION_1_8),
-
-            // TODO: Implement (Issue #37)
-            //  Also uncomment in :tools:check-publication build.gradle.kts
-//            KmpTarget.NonJvm.JS(
-//                compilerType = KotlinJsCompilerType.BOTH,
-//                browser = null,
-//                node = KmpTarget.NonJvm.JS.Node()
-//            ),
-
+            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
         KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +

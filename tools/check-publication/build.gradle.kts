@@ -18,7 +18,6 @@ import io.matthewnelson.kotlin.components.kmp.publish.isSnapshotVersion
 import io.matthewnelson.kotlin.components.kmp.publish.kmpPublishRootProjectConfiguration
 import io.matthewnelson.kotlin.components.kmp.util.includeSnapshotsRepoIfTrue
 import io.matthewnelson.kotlin.components.kmp.util.includeStagingRepoIfTrue
-import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 
 plugins {
     id(pluginId.kmp.configuration)
@@ -47,7 +46,6 @@ kmpConfiguration {
                     }
                 }
             ),
-
             KmpTarget.Jvm.Jvm(
                 kotlinJvmTarget = JavaVersion.VERSION_1_8,
                 mainSourceSet = {
@@ -56,13 +54,7 @@ kmpConfiguration {
                     }
                 }
             ),
-
-//            KmpTarget.NonJvm.JS(
-//                compilerType = KotlinJsCompilerType.BOTH,
-//                browser = null,
-//                node = KmpTarget.NonJvm.JS.Node()
-//            ),
-
+            KmpTarget.NonJvm.JS.DEFAULT,
             KmpTarget.NonJvm.Native.Unix.Darwin.Watchos.DeviceArm64.DEFAULT,
         ) +
         KmpTarget.NonJvm.Native.Android.ALL_DEFAULT             +
