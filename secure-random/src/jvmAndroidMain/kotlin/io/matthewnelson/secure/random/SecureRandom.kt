@@ -17,11 +17,22 @@ package io.matthewnelson.secure.random
 
 import io.matthewnelson.secure.random.internal.commonNextBytesOf
 
-/**
- * A cryptographically strong random number generator (RNG).
- *
- * @see [java.security.SecureRandom]
- * */
+@Deprecated(
+    message = """
+        Project moved to the https://github.com/KotlinCrypto organization.
+        
+        Step 1: Add dependency 'org.kotlincrypto:secure-random:0.1.0' to your project.
+        Step 2: Use the 'ReplaceWith' feature on import.
+        Step 2: Remove dependency 'io.matthewnelson.kotlin-components:secure-random'.
+        
+        See more at https://github.com/05nelsonm/secure-random/blob/master/README.md#migration
+    """,
+    replaceWith = ReplaceWith(
+        expression = "SecureRandom",
+        imports = [ "org.kotlincrypto.SecureRandom" ]
+    ),
+    level = DeprecationLevel.WARNING,
+)
 public actual class SecureRandom public actual constructor(): java.security.SecureRandom() {
 
     /**

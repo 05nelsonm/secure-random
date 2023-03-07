@@ -30,6 +30,22 @@ internal inline fun ByteArray?.ifNotNullOrEmpty(block: ByteArray.() -> Unit) {
     block.invoke(this)
 }
 
+@Deprecated(
+    message = """
+        Project moved to the https://github.com/KotlinCrypto organization.
+        
+        Step 1: Add dependency 'org.kotlincrypto:secure-random:0.1.0' to your project.
+        Step 2: Use the 'ReplaceWith' feature on import.
+        Step 2: Remove dependency 'io.matthewnelson.kotlin-components:secure-random'.
+        
+        See more at https://github.com/05nelsonm/secure-random/blob/master/README.md#migration
+    """,
+    replaceWith = ReplaceWith(
+        expression = "SecRandomCopyException",
+        imports = [ "org.kotlincrypto.SecRandomCopyException" ]
+    ),
+    level = DeprecationLevel.WARNING,
+)
 public class SecRandomCopyException: RuntimeException {
     public constructor(): super()
     public constructor(message: String?): super(message)
