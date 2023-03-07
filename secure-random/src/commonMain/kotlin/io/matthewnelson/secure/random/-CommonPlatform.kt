@@ -36,7 +36,7 @@ internal inline fun ByteArray?.ifNotNullOrEmpty(block: ByteArray.() -> Unit) {
         
         Step 1: Add dependency 'org.kotlincrypto:secure-random:0.1.0' to your project.
         Step 2: Use the 'ReplaceWith' feature on import.
-        Step 2: Remove dependency 'io.matthewnelson.kotlin-components:secure-random'.
+        Step 3: Remove dependency 'io.matthewnelson.kotlin-components:secure-random'.
         
         See more at https://github.com/05nelsonm/secure-random/blob/master/README.md#migration
     """,
